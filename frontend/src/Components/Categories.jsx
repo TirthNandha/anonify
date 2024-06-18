@@ -7,11 +7,24 @@ import ListItemContent from '@mui/joy/ListItemContent';
 import RedeemIcon from '@mui/icons-material/Redeem';
 import SchoolIcon from '@mui/icons-material/School';
 import LiveHelpIcon from '@mui/icons-material/LiveHelp';
+import Home from "@mui/icons-material/Home"
 
 
 function Categories() {
     return(
         <List>
+            <ListItem>
+                <ListItemButton
+                    color="neutral"
+                    disabled={false}
+                    selected={false}
+                    variant="soft"
+                >
+                <ListItemDecorator><Home /></ListItemDecorator>
+                    <ListItemContent>Home</ListItemContent>
+                    <KeyboardArrowRightIcon />
+                </ListItemButton>
+            </ListItem>
             <ListItem>
                 <ListItemButton
                     color="neutral"
