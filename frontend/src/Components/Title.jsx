@@ -3,7 +3,7 @@ import "../styles/Title.css"
 
 function Title() {
     return (
-        <h1>Feed</h1>
+        <h1>Home</h1>
     )
 }
 

@@ -26,15 +26,11 @@ function Content() {
                     <Categories />
                 </Grid>
                 <Grid item xs={6.5} sx={{ backgroundColor: '#e0e0e0', borderRadius: '15px', margin: '0 10px', position: 'sticky', top: "172px", zIndex: 0 }}>
-                    {
-                        Array.from({ length: 50 }).map((_, i) => (
-                            <Item key={i}>Post {i+1}</Item>
-                        ))
-                    }
+                    <Item>Item 1</Item>
                 </Grid>
                 <Grid item xs={2.5} sx={{ height: '230px', backgroundColor: '#d0d0d0', borderRadius: '15px', marginLeft: '7px', position: 'sticky', top: "172px" }}>
-                <h2 style={{paddingLeft:"5px", marginBottom: 3}}>Your Details</h2>
-                <YourDetails />
+                    <h2 style={{paddingLeft:"5px", marginBottom: 3}}>Your Details</h2>
+                    <YourDetails />
                 </Grid>
             </Grid>
 
