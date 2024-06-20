@@ -6,7 +6,7 @@ import '../styles/Header.css'
 
 const Header = () => {
     return (
-    <header className="header" style={{position: 'sticky', top: '0px', zIndex: 1}}>
+    <header className="header" style={{position: 'sticky', top: '0px', zIndex: 1, marginTop: '30px'}}>
       <div className="header-content">
         <div className="app-name">anonify</div>
         <div className="search-field">
