@@ -4,12 +4,18 @@ import '@fontsource/inter';
 import Categories from './Categories';
 import YourDetails from './YourDetails';
 import Post from './Post';
+import Header from "./Header";
+import Title from "./Title";
+import Spacer from "./Spacer";
 
 
 
-function Content() {
+function Home() {
     return (
         <div>
+            <Spacer />
+            <Header />
+            <Title />
             <Grid container spacing={3} sx={{ flexGrow: 1, paddingLeft: '29px' }}>
                 <Grid item xs={2.5} sx={{ height: '230px', backgroundColor: '#f0f0f0', borderRadius: '15px', marginRight: '7px', position: 'sticky', top: "172px"}}>
                     <h2 style={{paddingLeft:"5px", marginBottom: 3}}>Categories</h2>
@@ -54,4 +60,4 @@ function Content() {
     )
 }
 
-export default Content;
+export default Home;
