@@ -11,3 +11,5 @@
     - created a cool posts component.
     - added some random description in details component.
 ## day 5: 
+    - Created SignIn and SignUp pages.
+    - Added different routes in the app.
