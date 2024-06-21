@@ -21,13 +21,13 @@ function sendOTP(email) {
         post:587,
         secure:false,
         auth: {
-            user: 'verifier.anonify@gmail.com', // Your email address
-            pass: 'lxnc fqfv onfm wdpd', // Your email password
+            user: process.env.SENDER_EMAIL, // Your email address
+            pass: process.env.SENDER_APP_PASS, // Your email password
         },
     });
 
     const mailOptions = {
-        from: 'verifier.anonify@gmail.com',
+        from: process.env.SENDER_EMAIL,
         to: email,
         subject: 'OTP Verification',
         text: `Your OTP is ${otp}`,

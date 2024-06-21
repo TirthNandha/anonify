@@ -17,3 +17,5 @@
     - Created New Post Page and added routes.
     - added login button in header
     - made some minor fixes
+    - checked the email validator and verifier functionality and its working successfully
+    
