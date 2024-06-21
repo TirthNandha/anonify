@@ -13,3 +13,5 @@
 ## day 5: 
     - Created SignIn and SignUp pages.
     - Added different routes in the app.
+## day 6:
+    - Created New Post Page and added routes.

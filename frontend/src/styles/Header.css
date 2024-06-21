@@ -26,13 +26,15 @@
   .search-field {
     width: 300px;
   }
-  
-  .profile-icon img {
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-  }
-  
+    
   .profile svg {
     font-size: 50px;
+}
+
+.newPost {
+  margin-right: 0px;
+}
+
+.newPost svg {
+  font-size: 45px;
 }

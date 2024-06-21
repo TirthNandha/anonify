@@ -2,7 +2,8 @@ import React from 'react';
 import PersonIcon from '@mui/icons-material/Person';
 import SearchIcon from '@mui/icons-material/Search';
 import { TextField, InputAdornment, IconButton } from '@mui/material';
-import '../styles/Header.css'
+import '../styles/Header.css';
+import PostAddIcon from '@mui/icons-material/PostAdd';
 
 const Header = () => {
     return (
@@ -29,9 +30,12 @@ const Header = () => {
               ),
             }}
           />
+        </div>         
+        <div className='newPost'>
+          <PostAddIcon fontSize='medium' />
         </div>
         <div className="profile">
-          <PersonIcon fontSize='medium' />
+          <PersonIcon on fontSize='medium' />
         </div>
       </div>
     </header>
