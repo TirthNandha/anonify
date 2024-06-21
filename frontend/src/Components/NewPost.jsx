@@ -24,6 +24,21 @@ const NewPost = ({ onSubmit }) => {
       <Typography variant="h5" className="new-post-title">
         Create New Post
       </Typography>
+      <FormControl fullWidth required className="new-post-category">
+        <InputLabel>Category</InputLabel>
+        <Select
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+          label="Category"
+        >
+          <MenuItem value=""><em>None</em></MenuItem>
+          <MenuItem value="Music">General</MenuItem>
+          <MenuItem value="Technology">Admission</MenuItem>
+          <MenuItem value="Science">Placements</MenuItem>
+          <MenuItem value="Art">Culture</MenuItem>
+          {/* Add more categories as needed */}
+        </Select>
+      </FormControl>
       <TextField
         label="Title"
         variant="outlined"
@@ -44,21 +59,7 @@ const NewPost = ({ onSubmit }) => {
         required
         className="new-post-input"
       />
-      <FormControl fullWidth required className="new-post-category">
-        <InputLabel>Category</InputLabel>
-        <Select
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          label="Category"
-        >
-          <MenuItem value=""><em>None</em></MenuItem>
-          <MenuItem value="Music">General</MenuItem>
-          <MenuItem value="Technology">Admission</MenuItem>
-          <MenuItem value="Science">Placements</MenuItem>
-          <MenuItem value="Art">Culture</MenuItem>
-          {/* Add more categories as needed */}
-        </Select>
-      </FormControl>
+      
       <Button 
         type="submit" 
         variant="contained" 
