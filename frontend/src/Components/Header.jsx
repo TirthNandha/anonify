@@ -28,7 +28,10 @@ const Header = () => {
   return (
     <header className="header" style={{position: 'sticky', top: 0, zIndex:100}}>
       <div className="header-content">
-        <div className="app-name">anonify</div>
+        <div className="app-name">
+          <Link href='/' underline='none' color='inherit'>
+            anonify
+          </Link></div>
         <div className="search-field">
           <TextField
             variant="outlined"

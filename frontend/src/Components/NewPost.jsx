@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { TextField, Button, Box, Typography, MenuItem, Select, FormControl, InputLabel } from '@mui/material';
 import '../styles/NewPost.css';
+import Header from './Header';
 
 const NewPost = ({ onSubmit }) => {
   const [title, setTitle] = useState('');
@@ -16,7 +17,9 @@ const NewPost = ({ onSubmit }) => {
   };
 
   return (
-    <Box 
+    <div>
+    <Header />
+        <Box 
       component="form" 
       onSubmit={handleSubmit} 
       className="new-post-form"
@@ -63,12 +66,14 @@ const NewPost = ({ onSubmit }) => {
       <Button 
         type="submit" 
         variant="contained" 
-        color="primary" 
+        color="grey" 
         className="new-post-button"
       >
         Submit
       </Button>
     </Box>
+    </div>
+    
   );
 };
 

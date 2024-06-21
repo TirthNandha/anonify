@@ -13,7 +13,8 @@
   
   .new-post-title {
     margin-bottom: 16px;
-    color: #3f51b5;
+    color: #434652;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
   }
   
   .new-post-input {
@@ -24,7 +25,7 @@
   .new-post-button {
     align-self: flex-end;
     margin-top: 16px;
-    background-color: #3f51b5;
+    background-color: #434652;
   }
   
   .new-post-category {
