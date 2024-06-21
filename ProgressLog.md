@@ -15,3 +15,5 @@
     - Added different routes in the app.
 ## day 6:
     - Created New Post Page and added routes.
+    - added login button in header
+    - made some minor fixes
