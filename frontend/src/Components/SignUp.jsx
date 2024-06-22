@@ -1,4 +1,4 @@
-import * as React from 'react';
+import {React,useState} from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -12,6 +12,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import axios from 'axios';
 
 function SignUp() {
   const handleSubmit = (event) => {
@@ -22,6 +23,18 @@ function SignUp() {
       otp: data.get('otp'),
     });
   };
+  
+  const allowedDomains = ['vgecg.ac.in'];
+  const [email, setEmail] = useState('');
+  const [message, setMessage] = useState('');
+
+
+
+  // Validate email domain
+  function validateEmail(email) {
+    const [, domain] = email.split('@');
+    return allowedDomains.includes(domain);
+}
 
   return (
     <ThemeProvider theme={createTheme()}>
@@ -42,6 +55,17 @@ function SignUp() {
             Sign up
           </Typography>
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+          <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="username"
+              label="Your Anonymous username"
+              name="username"
+              autoComplete="username"
+              autoFocus
+              
+            />
             <TextField
               margin="normal"
               required
@@ -50,8 +74,10 @@ function SignUp() {
               label="Email Address"
               name="email"
               autoComplete="email"
-              autoFocus
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
+            
             <TextField
               margin="normal"
               required
@@ -66,6 +92,19 @@ function SignUp() {
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
+              onClick={async() => {
+                    console.log("Button clicked")
+                    if (validateEmail(email)) {
+                      try {
+                        const response = await axios.post('http://localhost:5000/send-otp', { email });
+                        setMessage(response.data.message);
+                      } catch (error) {
+                          setMessage('Error sending OTP');
+                      }
+                    } else {
+                      console.log('Invalid email domain');
+                    }
+                  }}
             >
               Send OTP
             </Button>

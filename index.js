@@ -3,16 +3,30 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 require('dotenv').config();
 const nodemailer = require('nodemailer');
+var cors = require('cors');
 
-const allowedDomains = ['vgecg.ac.in'];
+const app = express();
 
-// Validate email domain
-function validateEmail(email) {
-    const [, domain] = email.split('@');
-    return allowedDomains.includes(domain);
-}
+const corsOptions = {
+    origin: "http://localhost:3000",
+    methods: ['GET', 'HEAD', 'POST', 'PUT', 'DELETE'],
+    credentials: true
+  }
 
-// Send OTP function remains the same as in the previous example
+app.use(cors(corsOptions));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.static("public"));
+
+mongoose.connect(process.env.DB_URI)
+
+const anonifySchema = new mongoose.Schema({
+    username: String,
+    email: String
+})
+
+const LoginCredentials = mongoose.model("LoginCredentials", anonifySchema)
+
 function sendOTP(email) {
     const otp = Math.floor(1000 + Math.random() * 9000); // Generate a 4-digit OTP
     const transporter = nodemailer.createTransport({
@@ -42,20 +56,25 @@ function sendOTP(email) {
     });
 }
 
+app.post('/Signup', async function(req, res) {
+    const newID = new LoginCredentials({
+        title : req.body.title,
+        content : req.body.content
+    })
+})
 
-// Usage
-const email = '210170107047@vgecg.ac.in'; // Email to validate
-if (validateEmail(email)) {
+app.get('/', function(re,res) {
+    res.send("API home page")
+})
+app.post('/send-otp', function(req, res) {
+    const email = req.body.email;
     sendOTP(email);
-} else {
-    console.log('Invalid email domain');
-}
+    console.log('OTP sent');
+})
 
-const app = express()
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.static("public"));
+
+
 
 app.listen(process.env.PORT|| 5000, function(req, res) {
     console.log("Server started on post 5000");
