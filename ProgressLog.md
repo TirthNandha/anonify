@@ -15,3 +15,15 @@
     - Added different routes in the app.
 ## day 6:
     - Created New Post Page and added routes.
+    - added login button in header
+    - made some minor fixes
+    - checked the email validator and verifier functionality and its working successfully
+    
+## day 7:
+    - the email validation functionality implemented successfully
+    - Now the otp can be sent using the send otp button
+
+### To be done tomorrow:
+    - username validation
+    - otp verification from frontend
+    - implement database
