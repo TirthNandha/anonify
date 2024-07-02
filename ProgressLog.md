@@ -23,7 +23,9 @@
     - the email validation functionality implemented successfully
     - Now the otp can be sent using the send otp button
 
-### To be done tomorrow:
+## day 8:
     - username validation
     - otp verification from frontend
-    - implement database
+
+### to be done:
+    - make the signup button working
