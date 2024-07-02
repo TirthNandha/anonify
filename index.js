@@ -20,12 +20,13 @@ app.use(express.static("public"));
 
 mongoose.connect(process.env.DB_URI)
 
-const anonifySchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema({
     username: String,
-    email: String
+    email: String,
+    otp: Number
 })
 
-const LoginCredentials = mongoose.model("LoginCredentials", anonifySchema)
+const User = mongoose.model("LoginCredentials", userSchema)
 
 function sendOTP(email) {
     const otp = Math.floor(1000 + Math.random() * 9000); // Generate a 4-digit OTP
@@ -56,12 +57,21 @@ function sendOTP(email) {
     });
 }
 
-app.post('/Signup', async function(req, res) {
-    const newID = new LoginCredentials({
-        title : req.body.title,
-        content : req.body.content
-    })
-})
+app.post('/check-username', async (req, res) => {
+    const { username } = req.body;
+    
+    try {
+      const user = await User.findOne({ username });
+      if (user) {
+        res.json({ isUnique: false });
+      } else {
+        res.json({ isUnique: true });
+      }
+    } catch (error) {
+      console.error('Error checking username:', error);
+      res.status(500).json({ isUnique: false });
+    }
+  });
 
 app.get('/', function(re,res) {
     res.send("API home page")
@@ -71,11 +81,21 @@ app.post('/send-otp', function(req, res) {
     sendOTP(email);
     console.log('OTP sent');
 })
-
-
-
-
-
+app.post('/verify-otp', async (req, res) => {
+    const { email, otp } = req.body;
+  
+    try {
+      const user = await User.findOne({ email });
+      if (user && user.otp === parseInt(otp, 10)) {
+        res.json({ isValid: true });
+      } else {
+        res.json({ isValid: false });
+      }
+    } catch (error) {
+      console.error('Error verifying OTP:', error);
+      res.status(500).json({ isValid: false });
+    }
+  });
 app.listen(process.env.PORT|| 5000, function(req, res) {
     console.log("Server started on post 5000");
 })
