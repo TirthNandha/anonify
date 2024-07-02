@@ -23,34 +23,63 @@ function SignUp() {
   const [isUsernameValid, setIsUsernameValid] = useState(null);
   const [message, setMessage] = useState('');
   const [otp, setOtp] = useState('');
+  const [otpValidationMessage, setOtpValidationMessage] = useState('');
   const navigate = useNavigate();
 
+ 
   useEffect(() => {
-    if (username) {
-      const checkUsername = async () => {
+    const checkUsername = async () => {
+      if (username) {
         try {
           const response = await axios.post('http://localhost:5000/check-username', { username });
           setIsUsernameValid(response.data.isUnique);
         } catch (error) {
-          setIsUsernameValid(false);
+          console.error('Error checking username:', error);
         }
-      };
-      checkUsername();
-    } else {
-      setIsUsernameValid(null);
-    }
+      } else {
+        setIsUsernameValid(null);
+      }
+    };
+
+    checkUsername();
   }, [username]);
 
-  const handleSubmit = (event) => {
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      otp: data.get('otp'),
-      username: data.get('username'),
-    });
+
+    if (isUsernameValid) {
+      try {
+        console.log('Sending signup request with data:', { username, email, otp });
+        const response = await axios.post('http://localhost:5000/signup', { username, email, otp });
+        if (response.data.message === 'Signup successful') {
+          navigate('/');
+        } else {
+          setMessage(response.data.message);
+        }
+      } catch (error) {
+        console.error('Error during signup:', error);
+        setMessage('Error during signup');
+      }
+    } else {
+      console.log('Username is not valid');
+    }
   };
 
+  const handleOtpValidation = async () => {
+    try {
+      const response = await axios.post('http://localhost:5000/verify-otp', { email, otp });
+      console.log('OTP validation response:', response.data);
+      setOtpValidationMessage("OTP verified Successfully!!");
+    } catch (error) {
+      console.error('Error validating OTP:', error);
+      setOtpValidationMessage('Error validating OTP');
+    }
+  };
+
+  function handleRedirect() {
+    
+  }
 
 
 
@@ -90,12 +119,9 @@ function SignUp() {
               autoFocus
               value={username}
               onChange={(e) => setUsername(e.target.value)}
+              error={isUsernameValid === false}
+              helperText={isUsernameValid === false ? 'Username is already taken' : isUsernameValid === true ? 'Username is available' : ''}
             />
-            {isUsernameValid !== null && (
-              <Typography variant="body2" color={isUsernameValid ? 'success.main' : 'error.main'}>
-                {isUsernameValid ? 'Username is available' : 'Username is already taken'}
-              </Typography>
-            )}
             <TextField
               margin="normal"
               required
@@ -117,6 +143,8 @@ function SignUp() {
               type="text"
               id="otp"
               autoComplete="off"
+              value={otp}
+              onChange={(e) => setOtp(e.target.value)}
             />
             <Button
               fullWidth
@@ -126,7 +154,7 @@ function SignUp() {
                     console.log("Button clicked")
                     if (validateEmail(email)) {
                       try {
-                        const response = await axios.post('http://localhost:5000/send-otp', { email });
+                        const response = await axios.post('http://localhost:5000/send-otp', { username, email});
                         setMessage(response.data.message);
                       } catch (error) {
                           setMessage('Error sending OTP');
@@ -138,6 +166,19 @@ function SignUp() {
             >
               Send OTP
             </Button>
+            <Button
+              fullWidth
+              variant="contained"
+              sx={{ mt: 3, mb: 2 }}
+              onClick={handleOtpValidation}
+            >
+              Validate OTP
+            </Button>
+            {otpValidationMessage && (
+              <Typography variant="body2" color={otpValidationMessage.includes('valid') ? 'error' : 'primary'}>
+                {otpValidationMessage}
+              </Typography>
+            )}
             <FormControlLabel
               control={<Checkbox value="remember" color="primary" />}
               label="Remember me"
@@ -148,9 +189,11 @@ function SignUp() {
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
               disabled={!isUsernameValid}
+              onClick={handleRedirect}
             >
               Sign Up
             </Button>
+            <Typography color="error">{message}</Typography>
             <Grid container>
               <Grid item>
                 <Link href="/signin" variant="body2">
