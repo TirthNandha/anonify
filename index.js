@@ -78,7 +78,23 @@ app.post('/check-username', async (req, res) => {
     }
   });
 
-app.get('/', function(re,res) {
+  app.post('/check-email', async (req, res) => {
+    const { email } = req.body;
+  
+    try {
+      const user = await User.findOne({ email });
+      if (user) {
+        res.json({ isUnique: false });
+      } else {
+        res.json({ isUnique: true });
+      }
+    } catch (error) {
+      console.error('Error checking email:', error);
+      res.status(500).json({ message: 'Internal server error', isUnique: false });
+    }
+  });
+
+app.get('/', function(req,res) {
     res.send("API home page")
 })
 app.post('/send-otp', async function(req, res) {

@@ -25,6 +25,13 @@ function SignUp() {
   const [otp, setOtp] = useState('');
   const [otpValidationMessage, setOtpValidationMessage] = useState('');
   const navigate = useNavigate();
+  const [isEmailUnique, setIsEmailUnique] = useState(null);
+  const [isEmailValid, setIsEmailValid] = useState(null);
+  const [isOtpValid, setIsOtpValid] = useState(null);
+  const [isLogin, setIsLogin] = useState(false);
+  const [otpMessage, setOtpMessage] = useState('');
+
+  
 
  
   useEffect(() => {
@@ -44,15 +51,33 @@ function SignUp() {
     checkUsername();
   }, [username]);
 
+  useEffect(() => {
+    const checkEmail = async () => {
+      if (email) {
+        try {
+          const response = await axios.post('http://localhost:5000/check-email', { email });
+          setIsEmailValid(response.data.isUnique);
+        } catch (error) {
+          console.error('Error checking username:', error);
+        }
+      } else {
+        setIsEmailValid(null);
+      }
+    };
+
+    checkEmail();
+  }, [email]);
+
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (isUsernameValid) {
+    if (isOtpValid && isUsernameValid && isEmailUnique) {
       try {
         console.log('Sending signup request with data:', { username, email, otp });
         const response = await axios.post('http://localhost:5000/signup', { username, email, otp });
         if (response.data.message === 'Signup successful') {
+          setIsLogin(true)
           navigate('/');
         } else {
           setMessage(response.data.message);
@@ -63,22 +88,62 @@ function SignUp() {
       }
     } else {
       console.log('Username is not valid');
+      alert('Please enter correct information');
     }
   };
 
   const handleOtpValidation = async () => {
     try {
       const response = await axios.post('http://localhost:5000/verify-otp', { email, otp });
-      console.log('OTP validation response:', response.data);
-      setOtpValidationMessage("OTP verified Successfully!!");
+      if(response.data.isValid){
+        console.log('OTP validation response:', response.data);
+        setOtpValidationMessage("OTP verified Successfully!!");
+        setIsOtpValid(true);
+      } else{
+        console.log('Error validating OTP:', response.data);
+        setOtpValidationMessage("Error validating OTP");
+        setIsOtpValid(false);
+      }
     } catch (error) {
       console.error('Error validating OTP:', error);
       setOtpValidationMessage('Error validating OTP');
     }
   };
 
+  const handleEmailChange = async (e) => {
+    const email = e.target.value;
+    setEmail(email);
+  
+    if (!email) {
+      setIsEmailValid(null);
+      setIsEmailUnique(null);
+      return;
+    }
+  
+    const emailValid = validateEmail(email);
+    setIsEmailValid(emailValid);
+  
+    if (emailValid) {
+      try {
+        const response = await axios.post('http://localhost:5000/check-email', { email });
+        setIsEmailUnique(response.data.isUnique);
+      } catch (error) {
+        console.error('Error checking email:', error);
+      }
+    } else {
+      setIsEmailUnique(null); // Reset email uniqueness check if the email is invalid
+    }
+  };
+  
+  
+
   function handleRedirect() {
-    
+    if (isOtpValid) {
+      setIsLogin(true);
+      navigate('/'); // Redirect to the root route
+    } else {
+      alert('Please enter correct information');
+    }
   }
 
 
@@ -131,8 +196,21 @@ function SignUp() {
               name="email"
               autoComplete="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={handleEmailChange}
+              error={email && (isEmailValid === false || isEmailUnique === false)}
+              helperText={
+                !email
+                  ? ''
+                  : !validateEmail(email)
+                  ? 'Invalid email address'
+                  : isEmailUnique === false
+                  ? 'Email is already taken'
+                  : isEmailUnique === true
+                  ? 'Email is available'
+                  : ''
+              }
             />
+
             
             <TextField
               margin="normal"
@@ -150,22 +228,30 @@ function SignUp() {
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
-              onClick={async() => {
-                    console.log("Button clicked")
-                    if (validateEmail(email)) {
-                      try {
-                        const response = await axios.post('http://localhost:5000/send-otp', { username, email});
-                        setMessage(response.data.message);
-                      } catch (error) {
-                          setMessage('Error sending OTP');
-                      }
-                    } else {
-                      console.log('Invalid email domain');
-                    }
-                  }}
+              onClick={async () => {
+                console.log("Button clicked(OTP sent!!)")
+                if (validateEmail(email)) {
+                  try {
+                    const response = await axios.post('http://localhost:5000/send-otp', { username, email });
+                    setMessage(response.data.message);
+                    setOtpMessage('OTP sent!');  // Set OTP message here
+                  } catch (error) {
+                    setMessage('Error sending OTP');
+                    setOtpMessage('Error sending OTP');  // Set OTP message in case of error
+                  }
+                } else {
+                  console.log('Invalid email domain');
+                  setOtpMessage('Invalid email domain');  // Set OTP message for invalid email
+                }
+              }}
             >
               Send OTP
             </Button>
+            {otpMessage && (
+            <Typography variant="body2" color="textSecondary" align="center" sx={{ mt: 2 }}>
+              {otpMessage}
+            </Typography>
+)}
             <Button
               fullWidth
               variant="contained"
@@ -188,7 +274,7 @@ function SignUp() {
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
-              disabled={!isUsernameValid}
+              disabled={!isOtpValid}
               onClick={handleRedirect}
             >
               Sign Up
