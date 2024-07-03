@@ -71,25 +71,32 @@ function SignUp() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
-    if (isOtpValid && isUsernameValid && isEmailUnique) {
-      try {
-        console.log('Sending signup request with data:', { username, email, otp });
-        const response = await axios.post('http://localhost:5000/signup', { username, email, otp });
-        if (response.data.message === 'Signup successful') {
-          setIsLogin(true)
-          navigate('/');
-        } else {
-          setMessage(response.data.message);
-        }
-      } catch (error) {
-        console.error('Error during signup:', error);
-        setMessage('Error during signup');
-      }
+    if (isOtpValid) {
+      // await axios.post('http://localhost:5000/signup', { username })
+      setIsLogin(true);
+      
+      navigate('/'); // Redirect to the root route
     } else {
-      console.log('Username is not valid');
       alert('Please enter correct information');
     }
+    // if (isOtpValid && isUsernameValid && isEmailUnique) {
+    //   try {
+    //     console.log('Sending signup request with data:', { username, email, otp });
+    //     const response = await axios.post('http://localhost:5000/signup', { username, email, otp });
+    //     if (response.data.message === 'Signup successful') {
+    //       setIsLogin(true)
+    //       navigate('/');
+    //     } else {
+    //       setMessage(response.data.message);
+    //     }
+    //   } catch (error) {
+    //     console.error('Error during signup:', error);
+    //     setMessage('Error during signup');
+    //   }
+    // } else {
+    //   console.log('Username is not valid');
+    //   alert('Please enter correct information');
+    // }
   };
 
   const handleOtpValidation = async () => {
@@ -136,15 +143,6 @@ function SignUp() {
   };
   
   
-
-  function handleRedirect() {
-    if (isOtpValid) {
-      setIsLogin(true);
-      navigate('/'); // Redirect to the root route
-    } else {
-      alert('Please enter correct information');
-    }
-  }
 
 
 
@@ -284,7 +282,7 @@ function SignUp() {
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
               disabled={!isOtpValid}
-              onClick={handleRedirect}
+              // onClick={handleRedirect}
             >
               Sign Up
             </Button>

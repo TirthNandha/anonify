@@ -135,6 +135,9 @@ app.post('/verify-otp', async function(req, res) {
       }
       if (user.otp === Number(otp)) {
         res.json({ isValid: true });
+        // await User.updateOne({ email }, { $unset: { otp: "" } });
+        // res.status(200).json({ message: 'Signup successful' });
+        // console.log('signup successfull');
       } else {
         res.json({ isValid: false });
       }
@@ -145,33 +148,9 @@ app.post('/verify-otp', async function(req, res) {
   });
 
   app.post('/signup', async (req, res) => {
-    // const { username, email, otp } = req.body;
-    // console.log('Received signup request:', { username, email, otp });
-
-    // if (!username || !email || !otp) {
-    //     return res.status(400).json({ message: 'All fields are required' });
-    //   }
-  
-    // try {
-    //   const user = await User.findOne({ email, otp });
-    //   if (user) {
-    //     const newUser = new User({ username, email });
-    //     await newUser.save();
-    //     await User.updateOne({ email }, { $unset: { otp: "" } });
-    //     res.status(200).json({ message: 'Signup successful' });
-    //     console.log('signup successfull');
-    //   } else {
-    //     res.status(400).json({ message: 'Invalid OTP' });
-    //     console.log('Invalid OTP');
-    //   }
-    // } catch (error) {
-    //   console.error('Error during signup:', error);
-    //   res.status(500).json({ message: 'Error during signup' });
-    // }
-
-    // await User.updateOne({ email }, { $unset: { otp: "" } });
-    //     res.status(200).json({ message: 'Signup successful' });
-    //     console.log('signup successfull');
+    await User.updateOne({ username }, { $unset: { otp: "" } });
+        res.status(200).json({ message: 'Signup successful' });
+        console.log('signup successfull');
   });
   
 
