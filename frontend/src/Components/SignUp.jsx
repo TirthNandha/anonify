@@ -229,29 +229,38 @@ function SignUp() {
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
               onClick={async () => {
-                console.log("Button clicked(OTP sent!!)")
+                console.log("Button clicked(OTP sent!!)");
                 if (validateEmail(email)) {
                   try {
-                    const response = await axios.post('http://localhost:5000/send-otp', { username, email });
-                    setMessage(response.data.message);
-                    setOtpMessage('OTP sent!');  // Set OTP message here
+                    const response =  axios.post('http://localhost:5000/send-otp', { username, email });
+                    console.log("response: ",response);
+                    setOtpMessage('OTP sent!');
+                    // if (response.data.success) {
+                    //   setMessage(response.data.message);
+                    //   setOtpMessage('OTP sent!');
+                    // } else {
+                    //   setMessage('Failed to send OTP');
+                    //   setOtpMessage('Failed to send OTP');
+                    // }
                   } catch (error) {
                     setMessage('Error sending OTP');
-                    setOtpMessage('Error sending OTP');  // Set OTP message in case of error
+                    setOtpMessage('Error sending OTP');
                   }
                 } else {
                   console.log('Invalid email domain');
-                  setOtpMessage('Invalid email domain');  // Set OTP message for invalid email
+                  setOtpMessage('Invalid email domain');
                 }
               }}
             >
               Send OTP
             </Button>
+
             {otpMessage && (
-            <Typography variant="body2" color="textSecondary" align="center" sx={{ mt: 2 }}>
-              {otpMessage}
-            </Typography>
-)}
+              <Typography variant="body2" color="primary" align="center" sx={{ mt: 2 }}>
+                {otpMessage}
+              </Typography>
+            )}
+
             <Button
               fullWidth
               variant="contained"
