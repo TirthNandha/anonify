@@ -27,5 +27,34 @@
     - username validation
     - otp verification from frontend
 
+## day 9:
+    - made the signup button working
+    - made a check if email and username is not unique and displayd the message on screen
+
+## day 10:
+
+
+
+
+
+
+
+
+
+
+
+
+
 ### to be done:
-    - make the signup button working
+    - when otp is validated and user clicks on sign up otp should be removed from the schema.
+    - mdake the send otp button 'disable' after clicking once
+    - signin page
+    - fetch the requied details from the user's email and display in the your details section
+    - Make the new post page working 
+    - when user clicks on the post it would open in new page and add commets
+    - make comment section working
+    - the login button in the header should not appear if user is already logged in
+    - make the sign out in the profile section button working
+    - create a profile page
+    - create different pages that are in the categories section
+

@@ -1,4 +1,4 @@
-import {React,useState, useEffect} from 'react';
+import { React, useState, useEffect } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -16,7 +16,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 function SignUp() {
-  
+
   const allowedDomains = ['vgecg.ac.in'];
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
@@ -25,8 +25,16 @@ function SignUp() {
   const [otp, setOtp] = useState('');
   const [otpValidationMessage, setOtpValidationMessage] = useState('');
   const navigate = useNavigate();
+  const [isEmailUnique, setIsEmailUnique] = useState(null);
+  const [isEmailValid, setIsEmailValid] = useState(null);
+  const [isOtpValid, setIsOtpValid] = useState(null);
+  const [isLogin, setIsLogin] = useState(false);
+  const [otpMessage, setOtpMessage] = useState('');
+  const [isOtpSent, setIsOtpSent] = useState(null);
 
- 
+
+
+
   useEffect(() => {
     const checkUsername = async () => {
       if (username) {
@@ -44,50 +52,95 @@ function SignUp() {
     checkUsername();
   }, [username]);
 
+  useEffect(() => {
+    const checkEmail = async () => {
+      if (email) {
+        try {
+          const response = await axios.post('http://localhost:5000/check-email', { email });
+          setIsEmailValid(response.data.isUnique);
+        } catch (error) {
+          console.error('Error checking username:', error);
+        }
+      } else {
+        setIsEmailValid(null);
+      }
+    };
+
+    checkEmail();
+  }, [email]);
+
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
-    if (isUsernameValid) {
-      try {
-        console.log('Sending signup request with data:', { username, email, otp });
-        const response = await axios.post('http://localhost:5000/signup', { username, email, otp });
-        if (response.data.message === 'Signup successful') {
-          navigate('/');
-        } else {
-          setMessage(response.data.message);
-        }
-      } catch (error) {
-        console.error('Error during signup:', error);
-        setMessage('Error during signup');
-      }
-    } else {
-      console.log('Username is not valid');
-    }
+    axios.post('http://localhost:5000/signup', { username })
+    console.log("before set isLogin: ", isLogin);
+    setIsLogin(true);
+    navigate('/'); // Redirect to the root route
   };
+
 
   const handleOtpValidation = async () => {
     try {
       const response = await axios.post('http://localhost:5000/verify-otp', { email, otp });
-      console.log('OTP validation response:', response.data);
-      setOtpValidationMessage("OTP verified Successfully!!");
+      if (response.data.isValid) {
+        setOtpValidationMessage("OTP verified Successfully!!");
+        setIsOtpValid(true);
+      } else {
+        setOtpValidationMessage("Invalid OTP!!");
+        setIsOtpValid(false);
+      }
     } catch (error) {
-      console.error('Error validating OTP:', error);
-      setOtpValidationMessage('Error validating OTP');
+      console.error('Invalid OTP: ', error);
+      setOtpValidationMessage('Invalid OTP!!');
     }
   };
 
-  function handleRedirect() {
-    
-  }
+  const handleEmailChange = async (e) => {
+    const email = e.target.value;
+    setEmail(email);
 
+    if (!email) {
+      setIsEmailValid(null);
+      setIsEmailUnique(null);
+      return;
+    }
+
+    const emailValid = validateEmail(email);
+    setIsEmailValid(emailValid);
+
+    if (emailValid) {
+      try {
+        const response = await axios.post('http://localhost:5000/check-email', { email });
+        setIsEmailUnique(response.data.isUnique);
+      } catch (error) {
+        console.error('Error checking email:', error);
+      }
+    } else {
+      setIsEmailUnique(null); // Reset email uniqueness check if the email is invalid
+    }
+  };
+
+  function handleOtpSent() {
+    if (validateEmail(email)) {
+      try {
+        const response = axios.post('http://localhost:5000/send-otp', { username, email });
+        setOtpMessage('OTP sent!');
+        setIsOtpSent(true);
+      } catch (error) {
+        setMessage('Error sending OTP');
+        setOtpMessage('Error sending OTP');
+      }
+    } else {
+      setOtpMessage('Invalid email domain');
+    }
+  }
 
 
   // Validate email domain
   function validateEmail(email) {
     const [, domain] = email.split('@');
     return allowedDomains.includes(domain);
-}
+  }
 
   return (
     <ThemeProvider theme={createTheme()}>
@@ -108,7 +161,7 @@ function SignUp() {
             Sign up
           </Typography>
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-          <TextField
+            <TextField
               margin="normal"
               required
               fullWidth
@@ -131,9 +184,22 @@ function SignUp() {
               name="email"
               autoComplete="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={handleEmailChange}
+              error={email && (isEmailValid === false || isEmailUnique === false)}
+              helperText={
+                !email
+                  ? ''
+                  : !validateEmail(email)
+                    ? 'Invalid email address'
+                    : isEmailUnique === false
+                      ? 'Email is already taken'
+                      : isEmailUnique === true
+                        ? 'Email is available'
+                        : ''
+              }
             />
-            
+
+
             <TextField
               margin="normal"
               required
@@ -150,22 +216,18 @@ function SignUp() {
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
-              onClick={async() => {
-                    console.log("Button clicked")
-                    if (validateEmail(email)) {
-                      try {
-                        const response = await axios.post('http://localhost:5000/send-otp', { username, email});
-                        setMessage(response.data.message);
-                      } catch (error) {
-                          setMessage('Error sending OTP');
-                      }
-                    } else {
-                      console.log('Invalid email domain');
-                    }
-                  }}
+              disabled={!isEmailUnique || !isEmailValid || !username || isUsernameValid === false || isOtpSent}
+              onClick={handleOtpSent}
             >
               Send OTP
             </Button>
+
+            {otpMessage && (
+              <Typography variant="body2" color="primary" align="center" sx={{ mt: 2 }}>
+                {otpMessage}
+              </Typography>
+            )}
+
             <Button
               fullWidth
               variant="contained"
@@ -188,8 +250,7 @@ function SignUp() {
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
-              disabled={!isUsernameValid}
-              onClick={handleRedirect}
+              disabled={!isOtpValid}
             >
               Sign Up
             </Button>
