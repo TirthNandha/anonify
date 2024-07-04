@@ -123,7 +123,7 @@ function SignUp() {
   function handleOtpSent() {
     if (validateEmail(email)) {
       try {
-        axios.post('http://localhost:5000/send-otp', { username, email });
+        axios.post('http://localhost:5000/send-otp', { username, email, type: 'signup' });
         setOtpMessage('OTP sent!');
         setIsOtpSent(true);
       } catch (error) {
@@ -254,7 +254,7 @@ function SignUp() {
             >
               Sign Up
             </Button>
-            <Typography color="error">{message}</Typography>
+           <Typography color="error">{message}</Typography>
             <Grid container>
               <Grid item>
                 <Link href="/signin" variant="body2">
