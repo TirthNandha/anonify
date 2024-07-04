@@ -1,4 +1,4 @@
-import {React,useState, useEffect} from 'react';
+import { React, useState, useEffect } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -16,7 +16,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 function SignUp() {
-  
+
   const allowedDomains = ['vgecg.ac.in'];
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
@@ -30,10 +30,11 @@ function SignUp() {
   const [isOtpValid, setIsOtpValid] = useState(null);
   const [isLogin, setIsLogin] = useState(false);
   const [otpMessage, setOtpMessage] = useState('');
+  const [isOtpSent, setIsOtpSent] = useState(null);
 
-  
 
- 
+
+
   useEffect(() => {
     const checkUsername = async () => {
       if (username) {
@@ -71,65 +72,42 @@ function SignUp() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (isOtpValid) {
-      // await axios.post('http://localhost:5000/signup', { username })
-      setIsLogin(true);
-      
-      navigate('/'); // Redirect to the root route
-    } else {
-      alert('Please enter correct information');
-    }
-    // if (isOtpValid && isUsernameValid && isEmailUnique) {
-    //   try {
-    //     console.log('Sending signup request with data:', { username, email, otp });
-    //     const response = await axios.post('http://localhost:5000/signup', { username, email, otp });
-    //     if (response.data.message === 'Signup successful') {
-    //       setIsLogin(true)
-    //       navigate('/');
-    //     } else {
-    //       setMessage(response.data.message);
-    //     }
-    //   } catch (error) {
-    //     console.error('Error during signup:', error);
-    //     setMessage('Error during signup');
-    //   }
-    // } else {
-    //   console.log('Username is not valid');
-    //   alert('Please enter correct information');
-    // }
+    axios.post('http://localhost:5000/signup', { username })
+    console.log("before set isLogin: ", isLogin);
+    setIsLogin(true);
+    navigate('/'); // Redirect to the root route
   };
+
 
   const handleOtpValidation = async () => {
     try {
       const response = await axios.post('http://localhost:5000/verify-otp', { email, otp });
-      if(response.data.isValid){
-        console.log('OTP validation response:', response.data);
+      if (response.data.isValid) {
         setOtpValidationMessage("OTP verified Successfully!!");
         setIsOtpValid(true);
-      } else{
-        console.log('Error validating OTP:', response.data);
-        setOtpValidationMessage("Error validating OTP");
+      } else {
+        setOtpValidationMessage("Invalid OTP!!");
         setIsOtpValid(false);
       }
     } catch (error) {
-      console.error('Error validating OTP:', error);
-      setOtpValidationMessage('Error validating OTP');
+      console.error('Invalid OTP: ', error);
+      setOtpValidationMessage('Invalid OTP!!');
     }
   };
 
   const handleEmailChange = async (e) => {
     const email = e.target.value;
     setEmail(email);
-  
+
     if (!email) {
       setIsEmailValid(null);
       setIsEmailUnique(null);
       return;
     }
-  
+
     const emailValid = validateEmail(email);
     setIsEmailValid(emailValid);
-  
+
     if (emailValid) {
       try {
         const response = await axios.post('http://localhost:5000/check-email', { email });
@@ -141,16 +119,28 @@ function SignUp() {
       setIsEmailUnique(null); // Reset email uniqueness check if the email is invalid
     }
   };
-  
-  
 
+  function handleOtpSent() {
+    if (validateEmail(email)) {
+      try {
+        const response = axios.post('http://localhost:5000/send-otp', { username, email });
+        setOtpMessage('OTP sent!');
+        setIsOtpSent(true);
+      } catch (error) {
+        setMessage('Error sending OTP');
+        setOtpMessage('Error sending OTP');
+      }
+    } else {
+      setOtpMessage('Invalid email domain');
+    }
+  }
 
 
   // Validate email domain
   function validateEmail(email) {
     const [, domain] = email.split('@');
     return allowedDomains.includes(domain);
-}
+  }
 
   return (
     <ThemeProvider theme={createTheme()}>
@@ -171,7 +161,7 @@ function SignUp() {
             Sign up
           </Typography>
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-          <TextField
+            <TextField
               margin="normal"
               required
               fullWidth
@@ -200,16 +190,16 @@ function SignUp() {
                 !email
                   ? ''
                   : !validateEmail(email)
-                  ? 'Invalid email address'
-                  : isEmailUnique === false
-                  ? 'Email is already taken'
-                  : isEmailUnique === true
-                  ? 'Email is available'
-                  : ''
+                    ? 'Invalid email address'
+                    : isEmailUnique === false
+                      ? 'Email is already taken'
+                      : isEmailUnique === true
+                        ? 'Email is available'
+                        : ''
               }
             />
 
-            
+
             <TextField
               margin="normal"
               required
@@ -226,29 +216,8 @@ function SignUp() {
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
-              onClick={async () => {
-                console.log("Button clicked(OTP sent!!)");
-                if (validateEmail(email)) {
-                  try {
-                    const response =  axios.post('http://localhost:5000/send-otp', { username, email });
-                    console.log("response: ",response);
-                    setOtpMessage('OTP sent!');
-                    // if (response.data.success) {
-                    //   setMessage(response.data.message);
-                    //   setOtpMessage('OTP sent!');
-                    // } else {
-                    //   setMessage('Failed to send OTP');
-                    //   setOtpMessage('Failed to send OTP');
-                    // }
-                  } catch (error) {
-                    setMessage('Error sending OTP');
-                    setOtpMessage('Error sending OTP');
-                  }
-                } else {
-                  console.log('Invalid email domain');
-                  setOtpMessage('Invalid email domain');
-                }
-              }}
+              disabled={!isEmailUnique || !isEmailValid || !username || isUsernameValid === false || isOtpSent}
+              onClick={handleOtpSent}
             >
               Send OTP
             </Button>
@@ -282,7 +251,6 @@ function SignUp() {
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
               disabled={!isOtpValid}
-              // onClick={handleRedirect}
             >
               Sign Up
             </Button>

@@ -33,7 +33,6 @@ const User = mongoose.model("LoginCredentials", userSchema)
 
 function sendOTP(email) {
     const otp = Math.floor(1000 + Math.random() * 9000); // Generate a 4-digit OTP
-    console.log('The generated OTP is: ', otp);
     const transporter = nodemailer.createTransport({
         service: 'Gmail', // Or your email service provider
         host: 'smtp.gmail.com',
@@ -99,25 +98,14 @@ app.get('/', function(req,res) {
 })
 app.post('/send-otp', async function(req, res) {
     const { username, email } = req.body;
-    console.log('Received signup request:', { username, email});
     const otp = sendOTP(email);
-    console.log('OTP sent: ', otp);
     if (!username || !email) {
         return res.status(400).json({ message: 'All fields are required' });
       }
   
     try {
-    //   const user = await User.findOne({ email, otp });
-    //   if (user) {
         const newUser = new User({ username, email, otp });
-        console.log("newUser is: ", newUser);
         await newUser.save();
-        // await User.updateOne({ email }, { $unset: { otp: "" } });
-        // res.status(200).json({ message: 'Signup successful' });
-        // console.log('signup successfull');
-    //   } else {
-    //     res.status(400).json({ message: 'Invalid OTP' });
-    //     console.log('Invalid OTP');
     //   }
     } catch (error) {
       console.error('Error during signup:', error);
@@ -126,7 +114,6 @@ app.post('/send-otp', async function(req, res) {
 })
 app.post('/verify-otp', async function(req, res) {
     const { email, otp } = req.body;
-    console.log("the email and otp came for verificaton are: ", email," # ", otp);
   
     try {
       const user = await User.findOne({ email: email });
@@ -135,9 +122,6 @@ app.post('/verify-otp', async function(req, res) {
       }
       if (user.otp === Number(otp)) {
         res.json({ isValid: true });
-        // await User.updateOne({ email }, { $unset: { otp: "" } });
-        // res.status(200).json({ message: 'Signup successful' });
-        // console.log('signup successfull');
       } else {
         res.json({ isValid: false });
       }
@@ -148,9 +132,9 @@ app.post('/verify-otp', async function(req, res) {
   });
 
   app.post('/signup', async (req, res) => {
+    const {username} = req.body
     await User.updateOne({ username }, { $unset: { otp: "" } });
         res.status(200).json({ message: 'Signup successful' });
-        console.log('signup successfull');
   });
   
 

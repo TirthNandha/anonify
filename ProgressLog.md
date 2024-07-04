@@ -47,6 +47,7 @@
 
 ### to be done:
     - when otp is validated and user clicks on sign up otp should be removed from the schema.
+    - mdake the send otp button 'disable' after clicking once
     - signin page
     - fetch the requied details from the user's email and display in the your details section
     - Make the new post page working 
