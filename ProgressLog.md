@@ -58,4 +58,3 @@
     - create a profile page
     - create different pages that are in the categories section
 
-
