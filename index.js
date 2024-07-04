@@ -107,21 +107,48 @@ app.get('/', function(req,res) {
     res.send("API home page")
 })
 app.post('/send-otp', async function(req, res) {
-    const { username, email } = req.body;
-    const otp = sendOTP(email);
-    if (!username || !email) {
-        return res.status(400).json({ message: 'All fields are required' });
+  const { username, email, type } = req.body;
+
+  // Check for required fields
+  if (type === 'signup' && (!email || !username)) {
+      return res.status(400).json({ message: 'Username and email are required for signup' });
+  } else if (type === 'signin' && !email) {
+      return res.status(400).json({ message: 'Email is required for signin' });
+  }
+
+  const otp = sendOTP(email);
+
+  try {
+      if (type === 'signup') {
+          // Check if user already exists
+          const existingUser = await User.findOne({ email });
+          if (existingUser) {
+              return res.status(400).json({ message: 'User already exists with this email' });
+          }
+
+          // Create new user for signup
+          const newUser = new User({ username, email, otp });
+          await newUser.save();
+          return res.json({ message: 'OTP sent for signup' });
+
+      } else if (type === 'signin') {
+          // Find user by email and update OTP
+          const user = await User.findOne({ email });
+          if (user) {
+              user.otp = otp;
+              await user.save();
+              return res.json({ message: 'OTP sent for signin' });
+          } else {
+              return res.status(404).json({ message: 'User not found' });
+          }
+      } else {
+          return res.status(400).json({ message: 'Invalid request type' });
       }
-  
-    try {
-        const newUser = new User({ username, email, otp });
-        await newUser.save();
-    //   }
-    } catch (error) {
-      console.error('Error during signup:', error);
-      res.status(500).json({ message: 'Error during signup' });
-    }
-})
+  } catch (error) {
+      console.error('Error during OTP process:', error);
+      return res.status(500).json({ message: 'Internal server error' });
+  }
+});
 app.post('/verify-otp', async function(req, res) {
     const { email, otp } = req.body;
   
@@ -144,6 +171,11 @@ app.post('/verify-otp', async function(req, res) {
   app.post('/signup', async (req, res) => {
     const {username} = req.body
     await User.updateOne({ username }, { $unset: { otp: "" } });
+        res.status(200).json({ message: 'Signup successful' });
+  });
+  app.post('/signin', async (req, res) => {
+    const {email} = req.body
+    await User.updateOne({ email }, { $unset: { otp: "" } });
         res.status(200).json({ message: 'Signup successful' });
   });
   
