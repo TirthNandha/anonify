@@ -32,12 +32,10 @@
     - made a check if email and username is not unique and displayd the message on screen
 
 ## day 10:
+    - optimized send otp button and signin button to user validation
+    - completed sign in page.
 
-
-
-
-
-
+## day 11:
 
 
 
@@ -46,9 +44,9 @@
 
 
 ### to be done:
-    - when otp is validated and user clicks on sign up otp should be removed from the schema. (done)
+    - when otp is validated and user clicks on sign up otp should be removed from the schema after successful signup. (done)
     - make the send otp button 'disable' after clicking once. (done)
-    - signin page
+    - signin page(done)
     - add demo user
     - fetch the requied details from the user's email and display in the your details section
     - Make the new post page working 
