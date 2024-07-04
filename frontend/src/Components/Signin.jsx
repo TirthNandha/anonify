@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { React, useState, useEffect } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -12,8 +12,22 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import axios from 'axios';
 
 function SignIn() {
+
+  const allowedDomains = ['vgecg.ac.in'];
+  const [otp, setOtp] = useState('');
+  const [otpValidationMessage, setOtpValidationMessage] = useState('');
+  const [isOtpValid, setIsOtpValid] = useState(null);
+  const [email, setEmail] = useState('');
+  const [isOtpSent, setIsOtpSent] = useState(null);
+  const [isEmailExist, setIsEmailExist] = useState(null);
+  const [emailMessage, setEmailMessage] = useState('');
+  const [isLogin, setIsLogin] = useState(false);
+  const [otpMessage, setOtpMessage] = useState('');
+  const [message, setMessage] = useState('');
+
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -21,6 +35,60 @@ function SignIn() {
       email: data.get('email'),
       otp: data.get('otp'),
     });
+  };
+  const handleEmailChange = async (event) => {
+    const emailInput = event.target.value;
+    setEmail(emailInput);
+
+    if (validateEmail(emailInput)) {
+      try {
+        const response = await axios.post('http://localhost:5000/check-email', { email: emailInput, type: 'signin' });
+        setIsEmailExist(response.data.exists);
+        setEmailMessage(response.data.exists ? 'Email is valid.' : 'Email does not exist');
+      } catch (error) {
+        console.error('Error checking email:', error);
+        setIsEmailExist(null);
+        setEmailMessage('Error checking email');
+      }
+    } else {
+      setIsEmailExist(null);
+      setEmailMessage('Invalid email.');
+    }
+  };
+  
+  function validateEmail(email) {
+    const [, domain] = email.split('@');
+    return allowedDomains.includes(domain);
+  }
+
+  async function handleOtpSent() {
+    
+      try {
+        axios.post('http://localhost:5000/send-otp', { email, type: 'signin' });
+        setOtpMessage('OTP sent!');
+        setIsOtpSent(true);
+      } catch (error) {
+        setMessage('Error sending OTP');
+        setOtpMessage('Error sending OTP');
+      }
+    
+  }
+
+
+  const handleOtpValidation = async () => {
+    try {
+      const response = await axios.post('http://localhost:5000/verify-otp', { email, otp });
+      if (response.data.isValid) {
+        setOtpValidationMessage("OTP verified Successfully!!");
+        setIsOtpValid(true);
+      } else {
+        setOtpValidationMessage("Invalid OTP!!");
+        setIsOtpValid(false);
+      }
+    } catch (error) {
+      console.error('Invalid OTP: ', error);
+      setOtpValidationMessage('Invalid OTP!!');
+    }
   };
 
   return (
@@ -51,6 +119,10 @@ function SignIn() {
               name="email"
               autoComplete="email"
               autoFocus
+              value={email}
+              onChange={handleEmailChange}
+              error={email && (isEmailExist === false)}
+              helperText={email ? emailMessage : ''}
             />
             <TextField
               margin="normal"
@@ -66,9 +138,29 @@ function SignIn() {
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
+              disabled={!isEmailExist ||  isOtpSent}
+              onClick={handleOtpSent}
             >
               Send OTP
             </Button>
+            {otpMessage && (
+              <Typography variant="body2" color="primary" align="center" sx={{ mt: 2 }}>
+                {otpMessage}
+              </Typography>
+            )}
+            <Button
+              fullWidth
+              variant="contained"
+              sx={{ mt: 3, mb: 2 }}
+              onClick={handleOtpValidation}
+            >
+              Validate OTP
+            </Button>
+            {otpValidationMessage && (
+              <Typography variant="body2" color={otpValidationMessage.includes('valid') ? 'error' : 'primary'}>
+                {otpValidationMessage}
+              </Typography>
+            )}
             <FormControlLabel
               control={<Checkbox value="remember" color="primary" />}
               label="Remember me"

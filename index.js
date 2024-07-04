@@ -78,18 +78,28 @@ app.post('/check-username', async (req, res) => {
   });
 
   app.post('/check-email', async (req, res) => {
-    const { email } = req.body;
+    const { email, type } = req.body;
   
     try {
       const user = await User.findOne({ email });
-      if (user) {
-        res.json({ isUnique: false });
+      if (type === 'signup') {
+        if (user) {
+          res.json({ isUnique: false });
+        } else {
+          res.json({ isUnique: true });
+        }
+      } else if (type === 'signin') {
+        if (user) {
+          res.json({ exists: true });
+        } else {
+          res.json({ exists: false });
+        }
       } else {
-        res.json({ isUnique: true });
+        res.status(400).json({ message: 'Invalid type specified' });
       }
     } catch (error) {
       console.error('Error checking email:', error);
-      res.status(500).json({ message: 'Internal server error', isUnique: false });
+      res.status(500).json({ message: 'Internal server error' });
     }
   });
 

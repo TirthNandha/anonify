@@ -56,7 +56,7 @@ function SignUp() {
     const checkEmail = async () => {
       if (email) {
         try {
-          const response = await axios.post('http://localhost:5000/check-email', { email });
+          const response = await axios.post('http://localhost:5000/check-email', { email, type: 'signup' });
           setIsEmailValid(response.data.isUnique);
         } catch (error) {
           console.error('Error checking username:', error);
@@ -110,7 +110,7 @@ function SignUp() {
 
     if (emailValid) {
       try {
-        const response = await axios.post('http://localhost:5000/check-email', { email });
+        const response = await axios.post('http://localhost:5000/check-email', { email, type: 'signup' });
         setIsEmailUnique(response.data.isUnique);
       } catch (error) {
         console.error('Error checking email:', error);
@@ -123,7 +123,7 @@ function SignUp() {
   function handleOtpSent() {
     if (validateEmail(email)) {
       try {
-        const response = axios.post('http://localhost:5000/send-otp', { username, email });
+        axios.post('http://localhost:5000/send-otp', { username, email });
         setOtpMessage('OTP sent!');
         setIsOtpSent(true);
       } catch (error) {
