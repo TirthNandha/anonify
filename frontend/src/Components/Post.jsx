@@ -3,15 +3,14 @@ import "../styles/Post.css";
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import CommentIcon from '@mui/icons-material/Comment';
 
-const Post = ({ college, department, passoutYear, title, content, likes, comments }) => {
+const Post = ({ college, department, passoutYear, title, content, likes, comments, username }) => {
   return (
     <div className="postContainer">
-      {/* <div className="header">
-        <div className="department">{department}</div>
-        
-      </div> */}
       <div className="department">{department}</div>
+      <div className='titleContainer'>
       <h2 className="title">{title}</h2>
+      <span className="postedBy">{`~ Posted by ${username}`}</span>
+      </div>
       <div className="tagContainer">
           <span className="tag">{college}</span>
           <span className="tag">{`Passout: ${passoutYear}`}</span>
@@ -23,6 +22,7 @@ const Post = ({ college, department, passoutYear, title, content, likes, comment
         <span className="comments"><CommentIcon /> {comments} Comments</span>
       </div>
     </div>
+  
   );
 };
 
