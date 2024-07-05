@@ -128,10 +128,38 @@ app.post('/verify-otp', async function (req, res) {
 });
 
 app.post('/signup', async (req, res) => {
-  const { username } = req.body
-  await User.updateOne({ username }, { $unset: { otp: "" } });
-  res.status(200).json({ message: 'Signup successful' });
+  try {
+    const { username, college, department, passoutYear } = req.body;
+
+    // Update the user document
+    const result = await User.updateOne(
+      { username },
+      {
+        $set: {
+          college,
+          department,
+          passoutYear
+        },
+        $unset: { otp: "" }
+      }
+    );
+
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    if (result.modifiedCount === 0) {
+      return res.status(400).json({ message: 'No changes were made' });
+    }
+
+    res.status(200).json({ message: 'Signup successful' });
+  } catch (error) {
+    console.error('Signup error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
 });
+
+
 app.post('/signin', async (req, res) => {
   const { email } = req.body
   await User.updateOne({ email }, { $unset: { otp: "" } });
