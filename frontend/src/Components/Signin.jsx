@@ -25,7 +25,7 @@ function SignIn() {
   const [isOtpSent, setIsOtpSent] = useState(null);
   const [isEmailExist, setIsEmailExist] = useState(null);
   const [emailMessage, setEmailMessage] = useState('');
-  const [isLogin, setIsLogin] = useState(false);
+  const [isLoggedin, setIsLoggedin] = useState(false);
   const [otpMessage, setOtpMessage] = useState('');
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
@@ -33,8 +33,8 @@ function SignIn() {
   const handleSubmit = (event) => {
     event.preventDefault();
     axios.post('http://localhost:5000/signin', { email })
-    console.log("before set isLogin: ", isLogin);
-    setIsLogin(true);
+    console.log("before set isLoggedin: ", isLoggedin);
+    setIsLoggedin(true);
     navigate('/'); // Redirect to the root route
   };
   const handleEmailChange = async (event) => {
