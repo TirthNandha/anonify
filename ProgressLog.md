@@ -56,8 +56,9 @@
     - Make the new post page working 
     - when user clicks on the post it would open in new page and add commets
     - make comment section working
-    - the login button in the header should not appear if user is already logged in
-    - make the sign out in the profile section button working
+    - the login button in the header should not appear if user is already logged in. (done)
+    - make the sign out in the profile section button working. (done)
+    - hash + add salt to the email while storing in the db.
     - create a profile page
     - create different pages that are in the categories section
 
