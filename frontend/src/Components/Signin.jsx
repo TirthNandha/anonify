@@ -14,6 +14,8 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../AuthContext';
+
 
 function SignIn() {
 
@@ -25,18 +27,39 @@ function SignIn() {
   const [isOtpSent, setIsOtpSent] = useState(null);
   const [isEmailExist, setIsEmailExist] = useState(null);
   const [emailMessage, setEmailMessage] = useState('');
-  const [isLoggedin, setIsLoggedin] = useState(false);
+  // const [isLoggedin, setIsLoggedin] = useState(false);
   const [otpMessage, setOtpMessage] = useState('');
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
+  const { login } = useAuth();
 
-  const handleSubmit = (event) => {
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    axios.post('http://localhost:5000/signin', { email })
-    console.log("before set isLoggedin: ", isLoggedin);
-    setIsLoggedin(true);
-    navigate('/'); // Redirect to the root route
+    try {
+      // Send the signin request
+      const response = await axios.post('http://localhost:5000/signin', { email });
+      
+      if (response.status === 200) {
+        // Signin successful
+        const userData = {
+          email: email
+          // Add any other user data you want to store
+          // You might want to fetch additional user data here or in a separate request
+        };
+        
+        login(userData);
+        navigate('/'); // Redirect to the root route
+      } else {
+        // Signin failed
+        alert("Sign in failed. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error during sign in:", error);
+      alert("An error occurred during sign in. Please try again.");
+    }
   };
+
   const handleEmailChange = async (event) => {
     const emailInput = event.target.value;
     setEmail(emailInput);
