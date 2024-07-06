@@ -166,6 +166,21 @@ app.post('/signin', async (req, res) => {
   res.status(200).json({ message: 'Signup successful' });
 });
 
+app.post('/getDetails', async (req, res) => {
+  const { email } = req.body;
+  try {
+    const user = await User.findOne({ email: email });
+    if (user) {
+      res.json({college: user.college, department: user.department, passoutYear: user.passoutYear, username: user.username});
+    } else {
+      res.status(404).json({ message: 'User not found' });
+    }
+  } catch (error) {
+    console.error('Error getting user details:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 
 
 app.listen(process.env.PORT || 5000, function (req, res) {
