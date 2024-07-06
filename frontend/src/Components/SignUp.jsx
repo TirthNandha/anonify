@@ -14,7 +14,8 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom'; 
-import {fetchDetails} from '../utils/fetchDetails'
+import {fetchDetails} from '../utils/fetchDetails';
+import { useAuth } from '../AuthContext';
 
 function SignUp() {
 
@@ -29,9 +30,10 @@ function SignUp() {
   const [isEmailUnique, setIsEmailUnique] = useState(null);
   const [isEmailValid, setIsEmailValid] = useState(null);
   const [isOtpValid, setIsOtpValid] = useState(null);
-  const [isLoggedin, setIsLoggedin] = useState(false);
+  // const [isLoggedin, setIsLoggedin] = useState(false);
   const [otpMessage, setOtpMessage] = useState('');
   const [isOtpSent, setIsOtpSent] = useState(null);
+  const { login } = useAuth();
 
 
 
@@ -74,10 +76,27 @@ function SignUp() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     const { passoutYear, college, department } = fetchDetails(email);
-    axios.post('http://localhost:5000/signup', { username, passoutYear, college, department})
-    console.log("before set isLoggedin: ", isLoggedin);
-    setIsLoggedin(true);
-    navigate('/'); // Redirect to the root route
+    try {
+      const response = axios.post('http://localhost:5000/signup', { username, passoutYear, college, department})
+  
+      if (response.status === 200) {
+        // Signup successful
+        const userData = {
+          email: email,
+          username: username,
+          // Add any other user data you want to store
+        };
+        
+        login(userData);
+        navigate('/'); // Redirect to the root route
+      } else {
+        // Signup failed
+        alert("Sign up failed. Please try again.");
+      }
+    } catch(error) {
+      console.error("Error during sign up:", error);
+      alert("An error occurred during sign up. Please try again.");
+    }
   };
 
   

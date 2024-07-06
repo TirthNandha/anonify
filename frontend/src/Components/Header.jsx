@@ -5,9 +5,14 @@ import { TextField, InputAdornment, IconButton, Menu, MenuItem, Link } from '@mu
 import PostAddIcon from '@mui/icons-material/PostAdd';
 import '../styles/Header.css';
 import Button from '@mui/material/Button';
+import { useAuth } from '../AuthContext';
+import { useNavigate } from 'react-router-dom';
+
 
 const Header = () => {
   const [anchorEl, setAnchorEl] = useState(null);
+  const {isLoggedIn, logout} = useAuth();
+  const navigate = useNavigate();
 
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -18,7 +23,8 @@ const Header = () => {
   };
 
   const handleSignOut = () => {
-    // Add your sign-out logic here
+    logout();
+    navigate('/')
     console.log('Signed out');
     handleProfileMenuClose();
   };
@@ -58,12 +64,15 @@ const Header = () => {
             <PostAddIcon fontSize="medium" />
           </Link>
         </div>
-        <div className='Login'>
+        {!isLoggedIn &&
+          <div className='Login'>
           <Link href='Signin'>
             <Button variant="outlined">Log In</Button>
             
           </Link>
           </div>
+        }
+        
         <div className="profile">
           <IconButton onClick={handleProfileMenuOpen} color="inherit">
             <PersonIcon fontSize="medium" />
