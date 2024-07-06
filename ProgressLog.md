@@ -36,6 +36,10 @@
     - completed sign in page.
 
 ## day 11:
+    - created fetchDetails function.
+## day 12:
+    - add routes authentication
+    - made login and logout button work by storing the tokens in local storage.
 
 
 
