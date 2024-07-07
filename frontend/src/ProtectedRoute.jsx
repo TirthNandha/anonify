@@ -4,12 +4,10 @@ import { useAuth } from './AuthContext';
 
 const ProtectedRoute = ({ children }) => {
   const { isLoggedIn } = useAuth();
+  console.log("isLoggedIn from PR: ", isLoggedIn);
 
   if (!isLoggedIn) {
-    return <div>
-        <Navigate to="/Signin" />;
-        alert("Please Login to add post");
-    </div>
+    return <Navigate to="/Signin" />;
   }
 
   return children;

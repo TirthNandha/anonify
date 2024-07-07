@@ -47,6 +47,7 @@ function SignIn() {
           // Add any other user data you want to store
           // You might want to fetch additional user data here or in a separate request
         };
+        console.log("userData: ", userData);
         
         login(userData);
         navigate('/'); // Redirect to the root route

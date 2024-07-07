@@ -1,24 +1,37 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { TextField, Button, Box, Typography, MenuItem, Select, FormControl, InputLabel } from '@mui/material';
 import '../styles/NewPost.css';
 import Header from './Header';
+import {useAuth} from '../AuthContext'
+import axios from 'axios';
+import {DataContext} from "../DataContext"
 
-const NewPost = ({ onSubmit }) => {
+const NewPost = ( ) => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [category, setCategory] = useState('');
+  const {isLoggedIn, user} = useAuth();
+  const {college, department, passoutYear, username} = useContext(DataContext);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSubmit({ title, content, category });
-    setTitle('');
-    setContent('');
-    setCategory('');
+    try {
+      await axios.post("http://localhost:5000/newpost", { title, content, category, username, college, department, passoutYear });
+      alert("New Post added successfully!!");
+      setTitle('');
+      setContent('');
+      setCategory('');
+    } catch (error) {
+      console.error("Error adding new post:", error);
+      alert("Failed to add new post. Please try again later.");
+    }
   };
 
   return (
     <div>
     <Header />
+    {!isLoggedIn?
+      <h3 style={{color: 'red', textAlign: 'center'}}>Please signin to add post.</h3>:null}
         <Box 
       component="form" 
       onSubmit={handleSubmit} 
@@ -35,10 +48,10 @@ const NewPost = ({ onSubmit }) => {
           label="Category"
         >
           <MenuItem value=""><em>None</em></MenuItem>
-          <MenuItem value="Music">General</MenuItem>
-          <MenuItem value="Technology">Admission</MenuItem>
-          <MenuItem value="Science">Placements</MenuItem>
-          <MenuItem value="Art">Culture</MenuItem>
+          <MenuItem value="General">General</MenuItem>
+          <MenuItem value="Admission">Admission</MenuItem>
+          <MenuItem value="Placements">Placements</MenuItem>
+          <MenuItem value="Culture">Culture</MenuItem>
           {/* Add more categories as needed */}
         </Select>
       </FormControl>
