@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 var cors = require('cors');
 const User = require('./models/User');
 const { sendOTP } = require('./utils/otp');
+const Post = require('./models/Post');
 
 
 const app = express();
@@ -171,7 +172,7 @@ app.post('/getDetails', async (req, res) => {
   try {
     const user = await User.findOne({ email: email });
     if (user) {
-      res.json({college: user.college, department: user.department, passoutYear: user.passoutYear, username: user.username});
+      res.json({ college: user.college, department: user.department, passoutYear: user.passoutYear, username: user.username });
     } else {
       res.status(404).json({ message: 'User not found' });
     }
@@ -181,6 +182,14 @@ app.post('/getDetails', async (req, res) => {
   }
 });
 
+app.post('/newpost', async function(req, res) {
+  const { title, content, category, username, college, department, passoutYear } = req.body;
+  const newPost = new Post({ title, content, category, username, college, department, passoutYear });
+      await newPost.save();
+      console.log("new Post added.");
+      return res.json({ message: 'New Post added.' });
+
+})
 
 
 app.listen(process.env.PORT || 5000, function (req, res) {

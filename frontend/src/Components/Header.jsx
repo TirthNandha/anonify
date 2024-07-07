@@ -13,6 +13,7 @@ const Header = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const {isLoggedIn, logout} = useAuth();
   const navigate = useNavigate();
+  console.log("isLoggedIn from header: ", isLoggedIn);
 
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -64,6 +65,7 @@ const Header = () => {
             <PostAddIcon fontSize="medium" />
           </Link>
         </div>
+        
         {!isLoggedIn &&
           <div className='Login'>
           <Link href='Signin'>
