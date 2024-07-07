@@ -184,7 +184,10 @@ app.post('/getDetails', async (req, res) => {
 
 app.post('/newpost', async function(req, res) {
   const { title, content, category, username, college, department, passoutYear } = req.body;
-  const newPost = new Post({ title, content, category, username, college, department, passoutYear });
+  const likes = 0;
+  const comments = [];
+  let commentsCount = comments.length;
+  const newPost = new Post({ title, content, category, username, college, department, passoutYear, comments, commentsCount, likes });
       await newPost.save();
       console.log("new Post added.");
       return res.json({ message: 'New Post added.' });

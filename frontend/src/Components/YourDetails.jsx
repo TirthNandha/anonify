@@ -8,7 +8,7 @@ export function YourDetails() {
   const { isLoggedIn, user } = useAuth();
 
   if (!isLoggedIn) {
-    return <h3>Please Login to see your details</h3>;
+    return <h3 style={{color: 'red'}}>Please Login to see your details</h3>;
   }
 
   return (

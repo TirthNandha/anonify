@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const PostSchema = new mongoose.Schema({
     username: String,
     likes: Number,
-    commentCount: Number,
+    commentsCount: Number,
     comments: Array,
     title: String,
     content: String,
