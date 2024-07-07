@@ -40,6 +40,11 @@
 ## day 12:
     - add routes authentication
     - made login and logout button work by storing the tokens in local storage.
+## day 13:
+    - new post can be added now.
+    - new posts will be added in db on submit.
+## day 14:
+    
 
 
 
@@ -52,8 +57,8 @@
     - make the send otp button 'disable' after clicking once. (done)
     - signin page(done)
     - add demo user
-    - fetch the requied details from the user's email and display in the your details section
-    - Make the new post page working 
+    - fetch the requied details from the user's email and display in the your details section(done)
+    - Make the new post page working (done)
     - when user clicks on the post it would open in new page and add commets
     - make comment section working
     - the login button in the header should not appear if user is already logged in. (done)
