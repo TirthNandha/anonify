@@ -44,6 +44,8 @@
     - new post can be added now.
     - new posts will be added in db on submit.
 ## day 14:
+    - Added the feature to like or dislike the post.
+    - Displayed posts from database into front end. 
     
 
 
