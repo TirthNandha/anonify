@@ -10,7 +10,7 @@ const NewPost = ( ) => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [category, setCategory] = useState('');
-  const {isLoggedIn, user} = useAuth();
+  const {isLoggedIn} = useAuth();
   const {college, department, passoutYear, username} = useContext(DataContext);
 
   const handleSubmit = async (e) => {

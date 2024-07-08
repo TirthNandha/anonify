@@ -5,7 +5,7 @@ import { useAuth } from '../AuthContext';
 
 export function YourDetails() {
   const { college, department, passoutYear, username } = useContext(DataContext);
-  const { isLoggedIn, user } = useAuth();
+  const { isLoggedIn} = useAuth();
 
   if (!isLoggedIn) {
     return <h3 style={{color: 'red'}}>Please Login to see your details</h3>;
