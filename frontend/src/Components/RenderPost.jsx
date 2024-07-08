@@ -1,9 +1,11 @@
 import Post from './Post';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import axios from 'axios';
+import {DataContext} from '../DataContext';
 
 function RenderPost() {
     const [posts, setPosts] = useState([]);
+    const {username} = useContext(DataContext)
 
     useEffect(() => {
         // Fetch posts from the database
@@ -14,6 +16,7 @@ function RenderPost() {
         try {
             // Make an API call to fetch posts from the database
             const response = await axios.get("http://localhost:5000/api/posts");
+            console.log("response.data to render: ", response.data);
             setPosts(response.data);
         } catch (error) {
             console.error('Error fetching posts:', error);
@@ -27,15 +30,17 @@ function RenderPost() {
             ) : (
                 posts.map((post) => (
                     <Post
-                        key={post.id}
+                        key={post._id}
                         college={post.college}
                         department={post.department}
                         passoutYear={post.passoutYear}
                         title={post.title}
                         content={post.content}
-                        likes={post.likes}
                         commentsCount={post.commentsCount}
                         username={post.username}
+                        postId={post._id}
+                        initialLikes={post.likes}
+                        currentUser={username}
                     />
                 ))
             )}

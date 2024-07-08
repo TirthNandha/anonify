@@ -10,7 +10,8 @@ const PostSchema = new mongoose.Schema({
     category: String,
     college: String,
     department: String,
-    passoutYear: Number
+    passoutYear: Number,
+    likedBy: [{ type: String }] 
 })
 
 const Post = mongoose.model("Post", PostSchema)

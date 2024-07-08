@@ -205,6 +205,55 @@ app.get('/api/posts', async function(req, res) {
 });
 
 
+app.post('/api/posts/:postId/like', async (req, res) => {
+  const { postId } = req.params;
+  const { username } = req.body;
+
+  try {
+    const post = await Post.findById(postId);
+
+    if (!post) {
+      return res.status(404).json({ success: false, message: 'Post not found' });
+    }
+
+    if (post.likedBy.includes(username)) {
+      post.likedBy.pull(username);
+      post.likes -= 1;
+    } else {
+      post.likedBy.push(username);
+      post.likes += 1;
+    }
+
+    await post.save();
+
+    res.json({ success: true, likeCount: post.likes, isLiked: post.likedBy.includes(username) });
+  } catch (error) {
+    console.error('Error toggling like status:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+app.get('/api/posts/:postId/like-status', async (req, res) => {
+  const { postId } = req.params;
+  const { username } = req.query;
+
+  try {
+    const post = await Post.findById(postId);
+
+    if (!post) {
+      return res.status(404).json({ success: false, message: 'Post not found' });
+    }
+
+    const isLiked = post.likedBy.includes(username);
+    res.json({ success: true, isLiked });
+  } catch (error) {
+    console.error('Error fetching like status:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+
+
+
 app.listen(process.env.PORT || 5000, function (req, res) {
   console.log("Server started on post 5000");
 })
