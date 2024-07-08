@@ -60,10 +60,11 @@
     - fetch the requied details from the user's email and display in the your details section(done)
     - Make the new post page working (done)
     - when user clicks on the post it would open in new page and add commets
-    - make comment section working
+    - make comment section working.
+    - logout the user automatically if he's not active from a long time.
     - the login button in the header should not appear if user is already logged in. (done)
     - make the sign out in the profile section button working. (done)
     - hash + add salt to the email while storing in the db.
     - create a profile page
-    - create different pages that are in the categories section
+    - create different pages that area in the categories section
 

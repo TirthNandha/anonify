@@ -192,7 +192,17 @@ app.post('/newpost', async function(req, res) {
       console.log("new Post added.");
       return res.json({ message: 'New Post added.' });
 
-})
+});
+
+app.get('/api/posts', async function(req, res) {
+  try {
+    const foundPosts = await Post.find({}).lean();
+    res.json(foundPosts);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: 'An error occurred while fetching posts' });
+  }
+});
 
 
 app.listen(process.env.PORT || 5000, function (req, res) {

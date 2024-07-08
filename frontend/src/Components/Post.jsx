@@ -3,7 +3,7 @@ import "../styles/Post.css";
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import CommentIcon from '@mui/icons-material/Comment';
 
-const Post = ({ college, department, passoutYear, title, content, likes, comments, username }) => {
+const Post = ({ college, department, passoutYear, title, content, likes, commentsCount, username }) => {
   return (
     <div className="postContainer">
       <div className="department">{department}</div>
@@ -19,7 +19,7 @@ const Post = ({ college, department, passoutYear, title, content, likes, comment
       <div className="content">{content}</div>
       <div className="footer">
         <span className="likes"><ThumbUpIcon />{likes} Likes </span>
-        <span className="comments"><CommentIcon /> {comments} Comments</span>
+        <span className="comments"><CommentIcon /> {commentsCount} Comments</span>
       </div>
     </div>
   
