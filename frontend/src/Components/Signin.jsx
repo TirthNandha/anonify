@@ -25,9 +25,7 @@ function SignIn() {
   const [isOtpValid, setIsOtpValid] = useState(null);
   const [email, setEmail] = useState('');
   const [isOtpSent, setIsOtpSent] = useState(null);
-  const [isEmailExist, setIsEmailExist] = useState(null);
-  const [emailMessage, setEmailMessage] = useState('');
-  // const [isLoggedin, setIsLoggedin] = useState(false);
+  const [isEmailValid, setIsEmailValid] = useState(null);
   const [otpMessage, setOtpMessage] = useState('');
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
@@ -39,7 +37,7 @@ function SignIn() {
     try {
       // Send the signin request
       const response = await axios.post('http://localhost:5000/signin', { email });
-      
+
       if (response.status === 200) {
         // Signin successful
         const userData = {
@@ -48,7 +46,7 @@ function SignIn() {
           // You might want to fetch additional user data here or in a separate request
         };
         console.log("userData: ", userData);
-        
+
         login(userData);
         navigate('/'); // Redirect to the root route
       } else {
@@ -60,49 +58,44 @@ function SignIn() {
       alert("An error occurred during sign in. Please try again.");
     }
   };
-
   const handleEmailChange = async (event) => {
-    const emailInput = event.target.value;
-    setEmail(emailInput);
+    const email = event.target.value;
+    setEmail(email);
 
-    if (validateEmail(emailInput)) {
-      try {
-        const response = await axios.post('http://localhost:5000/check-email', { email: emailInput, type: 'signin' });
-        setIsEmailExist(response.data.exists);
-        setEmailMessage(response.data.exists ? 'Email is valid.' : 'Email does not exist');
-      } catch (error) {
-        console.error('Error checking email:', error);
-        setIsEmailExist(null);
-        setEmailMessage('Error checking email');
-      }
-    } else {
-      setIsEmailExist(null);
-      setEmailMessage('Invalid email.');
+    if (!email) {
+      setIsEmailValid(null);
+      // setIsEmailUnique(null);
+      return;
     }
+
+    const emailValid = validateEmail(email);
+    setIsEmailValid(emailValid);
   };
-  
+
+
   function validateEmail(email) {
     const [, domain] = email.split('@');
     return allowedDomains.includes(domain);
   }
 
   async function handleOtpSent() {
-    
-      try {
-        axios.post('http://localhost:5000/send-otp', { email, type: 'signin' });
-        setOtpMessage('OTP sent!');
-        setIsOtpSent(true);
-      } catch (error) {
-        setMessage('Error sending OTP');
-        setOtpMessage('Error sending OTP');
-      }
-    
+
+    try {
+      axios.post('http://localhost:5000/send-otp', { email, type: 'signin' });
+      setOtpMessage('OTP sent!');
+      setIsOtpSent(true);
+    } catch (error) {
+      setMessage('Error sending OTP');
+      setOtpMessage('Error sending OTP');
+    }
+
   }
 
 
   const handleOtpValidation = async () => {
     try {
-      const response = await axios.post('http://localhost:5000/verify-otp', { email, otp });
+      const response = await axios.post('http://localhost:5000/verify-otp', { email, otp, type: 'signin' });
+      console.log("resoonse from verify otp: ", response);
       if (response.data.isValid) {
         setOtpValidationMessage("OTP verified Successfully!!");
         setIsOtpValid(true);
@@ -146,8 +139,14 @@ function SignIn() {
               autoFocus
               value={email}
               onChange={handleEmailChange}
-              error={email && (isEmailExist === false)}
-              helperText={email ? emailMessage : ''}
+              error={email && (isEmailValid === false)}
+              helperText={
+                !email
+                  ? ''
+                  : !validateEmail(email)
+                    ? 'Invalid email address'
+                    : 'Email is valid.'
+              }
             />
             <TextField
               margin="normal"
@@ -165,7 +164,7 @@ function SignIn() {
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
-              disabled={!isEmailExist ||  isOtpSent}
+              disabled={!isEmailValid || isOtpSent}
               onClick={handleOtpSent}
             >
               Send OTP
@@ -197,7 +196,7 @@ function SignIn() {
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
-              disabled= {!isOtpValid}
+              disabled={!isOtpValid}
             >
               Sign In
             </Button>
