@@ -251,7 +251,19 @@ app.get('/api/posts/:postId/like-status', async (req, res) => {
   }
 });
 
-
+app.get('/api/post/:postId', async function(req, res) {
+  const { postId } = req.params;
+  try {
+    const post = await Post.findById(postId);
+    if (!post) {
+      return res.status(404).json({ error: 'Post not found' });
+    }
+    res.json(post);
+  } catch (error) {
+    console.error('Error fetching post:', error);
+    res.status(500).json({ error: 'An error occurred while fetching post' });
+  }
+});
 
 
 app.listen(process.env.PORT || 5000, function (req, res) {

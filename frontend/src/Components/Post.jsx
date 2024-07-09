@@ -3,6 +3,7 @@ import "../styles/Post.css";
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import CommentIcon from '@mui/icons-material/Comment';
 import axios from 'axios';
+import { Link } from "react-router-dom"
 
 const Post = ({ college, department, passoutYear, title, content, commentsCount, username, postId, initialLikes, currentUser }) => {
   const [isLiked, setIsLiked] = useState(false);
@@ -35,11 +36,17 @@ const Post = ({ college, department, passoutYear, title, content, commentsCount,
     }
   }
 
+  function handlePost() {
+    window.location.href = `/post/${postId}`;
+  }
+
   return (
     <div className="postContainer">
       <div className="department">{department}</div>
       <div className='titleContainer'>
-        <h2 className="title">{title}</h2>
+        <Link to={`/post/${postId}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+          <h2 className="title" style={{ cursor: 'pointer' }} onClick={handlePost}>{title}</h2>
+        </Link>
         <span className="postedBy">{`~ Posted by ${username}`}</span>
       </div>
       <div className="tagContainer">
@@ -52,7 +59,7 @@ const Post = ({ college, department, passoutYear, title, content, commentsCount,
         <span className="likes" onClick={handleLike} style={{ cursor: 'pointer' }}>
           <ThumbUpIcon style={{ color: isLiked ? 'blue' : 'inherit' }} /> {likes} Likes
         </span>
-        <span className="comments"><CommentIcon /> {commentsCount} Comments</span>
+        <span className="comments" onClick={handlePost} style={{ cursor: 'pointer' }}><CommentIcon /> {commentsCount} Comments</span>
       </div>
     </div>
   );
