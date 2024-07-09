@@ -7,6 +7,7 @@ import SignUp from "./SignUp";
 import NewPost from "./NewPost";
 import { AuthProvider } from '../AuthContext';
 import { DataProvider } from "../DataContext";
+import PostPage from "./PostPage";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
               <Route path="/Signin" element={<SignIn />} />
               <Route path="/Signup" element={<SignUp />} />
               <Route path="/Newpost" element={<NewPost />} />
+              <Route path="/post/:postId" element={<PostPage />} />
             </Routes>
           </Router>
         </DataProvider>

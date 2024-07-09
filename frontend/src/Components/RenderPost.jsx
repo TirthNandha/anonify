@@ -5,7 +5,7 @@ import {DataContext} from '../DataContext';
 
 function RenderPost() {
     const [posts, setPosts] = useState([]);
-    const {username} = useContext(DataContext)
+    const {username} = useContext(DataContext);
 
     useEffect(() => {
         // Fetch posts from the database
