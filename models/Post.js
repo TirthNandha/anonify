@@ -8,7 +8,8 @@ const PostSchema = new mongoose.Schema({
         username: String,
         department: String,
         passoutYear: Number,
-        content: String
+        content: String,
+        college: String
     }],
     title: String,
     content: String,

@@ -13,7 +13,6 @@ const Header = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const {isLoggedIn, logout} = useAuth();
   const navigate = useNavigate();
-  console.log("isLoggedIn from header: ", isLoggedIn);
 
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -26,7 +25,6 @@ const Header = () => {
   const handleSignOut = () => {
     logout();
     navigate('/')
-    console.log('Signed out');
     handleProfileMenuClose();
   };
 

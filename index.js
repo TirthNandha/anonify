@@ -282,7 +282,7 @@ app.get('/api/post/:postId/comments', async function(req, res) {
 
 app.post("/api/post/:postId/add-comment", async function(req, res) {
   const { postId } = req.params;
-  const { content, username, passoutYear, department } = req.body;
+  const { content, username, passoutYear, department, college } = req.body;
 
   try {
     const post = await Post.findById(postId);
@@ -295,7 +295,8 @@ app.post("/api/post/:postId/add-comment", async function(req, res) {
       content,
       username,
       passoutYear,
-      department
+      department,
+      college
     };
 
     post.comments.push(newComment);

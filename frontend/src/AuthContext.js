@@ -8,7 +8,6 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem('user'));
-    console.log('Stored user:', storedUser);
     if (storedUser) {
       setIsLoggedIn(true);
       setUser(storedUser);
@@ -16,7 +15,6 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = (userData) => {
-    console.log('Logging in with:', userData);
     setIsLoggedIn(true);
     setUser(userData);
     localStorage.setItem('user', JSON.stringify(userData));

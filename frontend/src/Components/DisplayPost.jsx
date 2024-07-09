@@ -11,7 +11,7 @@ function DisplayPost() {
     const [comments, setComments] = useState([]);
     const [newComment, setNewComment] = useState('');
     const { postId } = useParams();
-    const {department, passoutYear, username } = useContext(DataContext);
+    const { department, passoutYear, username, college } = useContext(DataContext);
 
     useEffect(() => {
         const fetchPostAndComments = async () => {
@@ -43,10 +43,11 @@ function DisplayPost() {
                 username: username,
                 passoutYear: passoutYear,
                 department: department,
+                college: college
             });
             setComments([...comments, response.data]);
             setNewComment('');
-            alert("Comment added successfully");
+            // alert("Comment added successfully");
         } catch (error) {
             console.error("Error adding comment:", error);
         }
@@ -87,13 +88,17 @@ function DisplayPost() {
             </Box>
 
 
-            {comments.length > 0 ? (
-                comments.map((comment) => (
-                    <Comment key={comment._id} comment={comment} />
-                ))
-            ) : (
-                <Typography variant="body2" color="text.secondary">No comments yet.</Typography>
-            )}
+            <Box sx={{ mt: 4, mb: 2 }}>
+                <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold' }}>Comments</Typography>
+                {comments.length > 0 ? (
+                    comments.map((comment) => (
+                        <Comment key={comment._id} comment={comment} />
+                    ))
+                ) : (
+                    <Typography variant="body2" color="text.secondary">No comments yet.</Typography>
+                )}
+            </Box>
+
         </Box>
     );
 }
