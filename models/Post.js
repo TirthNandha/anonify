@@ -4,7 +4,12 @@ const PostSchema = new mongoose.Schema({
     username: String,
     likes: Number,
     commentsCount: Number,
-    comments: Array,
+    comments: [{
+        username: String,
+        department: String,
+        passoutYear: Number,
+        content: String
+    }],
     title: String,
     content: String,
     category: String,

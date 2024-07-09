@@ -3,7 +3,6 @@ import "../styles/Post.css";
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import CommentIcon from '@mui/icons-material/Comment';
 import axios from 'axios';
-import { Link } from "react-router-dom"
 
 const Post = ({ college, department, passoutYear, title, content, commentsCount, username, postId, initialLikes, currentUser }) => {
   const [isLiked, setIsLiked] = useState(false);
@@ -44,9 +43,7 @@ const Post = ({ college, department, passoutYear, title, content, commentsCount,
     <div className="postContainer">
       <div className="department">{department}</div>
       <div className='titleContainer'>
-        <Link to={`/post/${postId}`} style={{ textDecoration: 'none', color: 'inherit' }}>
           <h2 className="title" style={{ cursor: 'pointer' }} onClick={handlePost}>{title}</h2>
-        </Link>
         <span className="postedBy">{`~ Posted by ${username}`}</span>
       </div>
       <div className="tagContainer">

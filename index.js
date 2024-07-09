@@ -265,6 +265,51 @@ app.get('/api/post/:postId', async function(req, res) {
   }
 });
 
+app.get('/api/post/:postId/comments', async function(req, res) {
+  const { postId } = req.params;
+  try {
+    const post = await Post.findById(postId);
+    if (!post) {
+      return res.status(404).json({ error: 'Post not found' });
+    }
+    const comments = post.comments;
+    res.json(comments);
+  } catch (error) {
+    console.error('Error fetching comments:', error);
+    res.status(500).json({ error: 'An error occurred while fetching comments' });
+  }
+});
+
+app.post("/api/post/:postId/add-comment", async function(req, res) {
+  const { postId } = req.params;
+  const { content, username, passoutYear, department } = req.body;
+
+  try {
+    const post = await Post.findById(postId);
+
+    if (!post) {
+      return res.status(404).json({ success: false, message: 'Post not found' });
+    }
+
+    const newComment = {
+      content,
+      username,
+      passoutYear,
+      department
+    };
+
+    post.comments.push(newComment);
+    post.commentsCount += 1;
+
+    await post.save();
+
+    res.json({ success: true, message: 'Comment added successfully' });
+  } catch (error) {
+    console.error('Error adding comment:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+})
+
 
 app.listen(process.env.PORT || 5000, function (req, res) {
   console.log("Server started on post 5000");
