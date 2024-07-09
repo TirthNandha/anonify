@@ -50,6 +50,7 @@
 ## day 15:
     - Added comment section and and feauture to add and displayed comments.
     - posts is opened in new page on click.
+    - changes the whole app to use hashedEmail instead of email to prevent privacy.
 
 
 
@@ -69,7 +70,8 @@
     - logout the user automatically if he's not active from a long time.
     - the login button in the header should not appear if user is already logged in. (done)
     - make the sign out in the profile section button working. (done)
-    - hash + add salt to the email while storing in the db.
+    - hash + add salt to the email while storing in the db. (done)
     - create a profile page
-    - create different pages that area in the categories section
+    - create different pages that area in the categories section.
+    - create context in backend to hash email.
 
