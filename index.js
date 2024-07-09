@@ -28,10 +28,6 @@ mongoose.connect(process.env.DB_URI1)
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
-const saltRounds = 10; // Cost factor for bcrypt hashing
-const fixedSalt = 'some_fixed_salt'; // Fixed salt for hashing email
-
-
 
 app.post('/check-username', async (req, res) => {
   const { username } = req.body;
@@ -178,9 +174,11 @@ app.post('/signup', async (req, res) => {
 
 
 app.post('/signin', async (req, res) => {
-  const { email } = req.body
-  await User.updateOne({ email }, { $unset: { otp: "" } });
-  res.status(200).json({ message: 'Signup successful' });
+  const { email } = req.body;
+  const hashedEmail = crypto.pbkdf2Sync(email, process.env.SALT, 1000, 64, 'sha512').toString('hex');
+  await User.updateOne({ hashedEmail }, { $unset: { otp: "" } });
+  const updatedUser = await User.findOne({ hashedEmail });
+  res.status(200).json({ message: 'Signup successful', username: updatedUser.username });
 });
 
 app.post('/getDetails', async (req, res) => {
