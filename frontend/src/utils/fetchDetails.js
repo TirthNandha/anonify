@@ -1,5 +1,7 @@
-const fetchDetails = (email) => {
+export const fetchDetails = (email) => {
     const [enrollNo, ] = email.split('@');
+    console.log("length of enrNO.: ", enrollNo.length);
+    console.log("enrollment num: ", enrollNo);
     
     if (enrollNo.length !== 12) {
       console.error('Invalid enrollment number length');
@@ -333,4 +335,4 @@ const fetchDetails = (email) => {
     return { passoutYear, college, department };
   };
 
-  module.exports = fetchDetails;
+  // module.exports = fetchDetails;

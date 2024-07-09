@@ -5,6 +5,7 @@ var cors = require('cors');
 const User = require('./models/User');
 const { sendOTP } = require('./utils/otp');
 const Post = require('./models/Post');
+const bcrypt = require('bcryptjs');
 
 
 const app = express();
@@ -20,11 +21,13 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
-mongoose.connect(process.env.DB_URI)
+mongoose.connect(process.env.DB_URI1)
 
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
+const saltRounds = 10; // Cost factor for bcrypt hashing
+const fixedSalt = 'some_fixed_salt'; // Fixed salt for hashing email
 
 
 
@@ -75,19 +78,29 @@ app.get('/', function (req, res) {
 })
 app.post('/send-otp', async function (req, res) {
   const { username, email, type } = req.body;
-
+  console.log("email received:", email);
   const otp = sendOTP(email);
+  const hashedEmail = await bcrypt.hash(email, 10);
+  console.log("hashedEmail: ",hashedEmail);
+  // bcrypt.genSalt(10, (err, salt) => {
+  //   bcrypt.hash(email, salt, (err, hash) => {
+  //     // Store `hash` and `salt` in the database
+  //     console.log(:hash);
+  //     console.log('Salt:', salt);
+    // });
+  // });
 
   try {
     if (type === 'signup') {
       // Check if user already exists
-      const existingUser = await User.findOne({ email });
-      if (existingUser) {
-        return res.status(400).json({ message: 'User already exists with this email' });
-      }
+      // const existingUser = await User.findOne({ hashedEmail });
+      // if (existingUser) {
+      //   return res.status(400).json({ message: 'User already exists with this email' });
+      // }
 
       // Create new user for signup
-      const newUser = new User({ username, email, otp });
+      const newUser = new User({ username, hashedEmail, otp });
+      console.log("newUser to save: ", newUser);
       await newUser.save();
       return res.json({ message: 'OTP sent for signup' });
 
@@ -109,11 +122,13 @@ app.post('/send-otp', async function (req, res) {
     return res.status(500).json({ message: 'Internal server error' });
   }
 });
+
+
 app.post('/verify-otp', async function (req, res) {
-  const { email, otp } = req.body;
+  const { username, otp } = req.body;
 
   try {
-    const user = await User.findOne({ email: email });
+    const user = await User.findOne({ username: username });
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
@@ -168,9 +183,9 @@ app.post('/signin', async (req, res) => {
 });
 
 app.post('/getDetails', async (req, res) => {
-  const { email } = req.body;
+  const { username } = req.body;
   try {
-    const user = await User.findOne({ email: email });
+    const user = await User.findOne({ username: username });
     if (user) {
       res.json({ college: user.college, department: user.department, passoutYear: user.passoutYear, username: user.username });
     } else {
@@ -189,7 +204,6 @@ app.post('/newpost', async function(req, res) {
   let commentsCount = comments.length;
   const newPost = new Post({ title, content, category, username, college, department, passoutYear, comments, commentsCount, likes });
       await newPost.save();
-      console.log("new Post added.");
       return res.json({ message: 'New Post added.' });
 
 });
