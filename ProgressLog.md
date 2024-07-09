@@ -47,6 +47,9 @@
     - Added the feature to like or dislike the post.
     - Displayed posts from database into front end. 
     
+## day 15:
+    - Added comment section and and feauture to add and displayed comments.
+    - posts is opened in new page on click.
 
 
 
@@ -61,8 +64,8 @@
     - add demo user
     - fetch the requied details from the user's email and display in the your details section(done)
     - Make the new post page working (done)
-    - when user clicks on the post it would open in new page and add commets
-    - make comment section working.
+    - when user clicks on the post it would open in new page and add commets (done)
+    - make comment section working. (done)
     - logout the user automatically if he's not active from a long time.
     - the login button in the header should not appear if user is already logged in. (done)
     - make the sign out in the profile section button working. (done)
