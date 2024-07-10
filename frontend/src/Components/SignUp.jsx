@@ -13,8 +13,8 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom'; 
-import {fetchDetails} from '../utils/fetchDetails';
+import { useNavigate } from 'react-router-dom';
+import { fetchDetails } from '../utils/fetchDetails';
 import { useAuth } from '../AuthContext';
 
 function SignUp() {
@@ -53,34 +53,12 @@ function SignUp() {
     checkUsername();
   }, [username]);
 
-  useEffect(() => {
-    const checkEmail = async () => {
-      if (email) {
-        try {
-          const response = await axios.post('http://localhost:5000/check-email', { email, type: 'signup' });
-          setIsEmailValid(response.data.isUnique);
-        } catch (error) {
-          console.error('Error checking username:', error);
-        }
-      } else {
-        setIsEmailValid(null);
-      }
-    };
-
-    checkEmail();
-  }, [email]);
-
-
   const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log("email to fetch details: ", email);
     const { passoutYear, college, department } = fetchDetails(email);
-    console.log("passout: ", passoutYear);
-    console.log("college: ", college);
-    console.log("department: ", department);
     try {
-      const response = await axios.post('http://localhost:5000/signup', { username, college, department, passoutYear})
-  
+      const response = await axios.post('http://localhost:5000/signup', { username, college, department, passoutYear })
+
       if (response.status === 200) {
         // Signup successful
         const userData = {
@@ -88,24 +66,24 @@ function SignUp() {
           username: username,
           // Add any other user data you want to store
         };
-        
+
         login(userData);
         navigate('/'); // Redirect to the root route
       } else {
         // Signup failed
         alert("Sign up failed. Please try again.");
       }
-    } catch(error) {
+    } catch (error) {
       console.error("Error during sign up:", error);
       alert("An error occurred during sign up. Please try again.");
     }
   };
 
-  
+
 
   const handleOtpValidation = async () => {
     try {
-      const response = await axios.post('http://localhost:5000/verify-otp', { username, otp });
+      const response = await axios.post('http://localhost:5000/verify-otp', { username, otp, type: 'signup' });
       if (response.data.isValid) {
         setOtpValidationMessage("OTP verified Successfully!!");
         setIsOtpValid(true);
@@ -122,7 +100,6 @@ function SignUp() {
   const handleEmailChange = async (e) => {
     const email = e.target.value;
     setEmail(email);
-    console.log("email typed: ", email);
 
     if (!email) {
       setIsEmailValid(null);
@@ -133,22 +110,12 @@ function SignUp() {
     const emailValid = validateEmail(email);
     setIsEmailValid(emailValid);
 
-    // if (emailValid) {
-    //   try {
-    //     const response = await axios.post('http://localhost:5000/check-email', { email, type: 'signup' });
-    //     setIsEmailUnique(response.data.isUnique);
-    //   } catch (error) {
-    //     console.error('Error checking email:', error);
-    //   }
-    // } else {
-    //   setIsEmailUnique(null); // Reset email uniqueness check if the email is invalid
-    // }
   };
 
   async function handleOtpSent() {
     if (validateEmail(email)) {
       try {
-        const response = await axios.post('http://localhost:5000/send-otp', { username, email, type: 'signup' });
+        await axios.post('http://localhost:5000/send-otp', { username, email, type: 'signup' });
         setOtpMessage('OTP sent!');
         setIsOtpSent(true);
       } catch (error) {
@@ -275,7 +242,7 @@ function SignUp() {
             >
               Sign Up
             </Button>
-           <Typography color="error">{message}</Typography>
+            <Typography color="error">{message}</Typography>
             <Grid container>
               <Grid item>
                 <Link href="/signin" variant="body2">

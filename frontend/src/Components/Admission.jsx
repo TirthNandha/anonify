@@ -8,8 +8,8 @@ function Home() {
     return (
         <div>
             <Header />
-            <Title title={"Home"}/>
-            <Layout type={"home"}/>
+            <Title title={"Admission"}/>
+            <Layout type={"Admission"}/>
 
         </div>
     )

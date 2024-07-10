@@ -6,6 +6,8 @@ const User = require('./models/User');
 const { sendOTP } = require('./utils/otp');
 const Post = require('./models/Post');
 const bcrypt = require('bcryptjs');
+require('dotenv').config();
+const crypto = require('crypto');
 
 
 const app = express();
@@ -25,10 +27,6 @@ mongoose.connect(process.env.DB_URI1)
 
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
-
-const saltRounds = 10; // Cost factor for bcrypt hashing
-const fixedSalt = 'some_fixed_salt'; // Fixed salt for hashing email
-
 
 
 app.post('/check-username', async (req, res) => {
@@ -80,24 +78,10 @@ app.post('/send-otp', async function (req, res) {
   const { username, email, type } = req.body;
   console.log("email received:", email);
   const otp = sendOTP(email);
-  const hashedEmail = await bcrypt.hash(email, 10);
-  console.log("hashedEmail: ",hashedEmail);
-  // bcrypt.genSalt(10, (err, salt) => {
-  //   bcrypt.hash(email, salt, (err, hash) => {
-  //     // Store `hash` and `salt` in the database
-  //     console.log(:hash);
-  //     console.log('Salt:', salt);
-    // });
-  // });
-
+  const hashedEmail = crypto.pbkdf2Sync(email, process.env.SALT, 1000, 64, 'sha512').toString('hex');
+  console.log("hashedEmail: ", hashedEmail);
   try {
     if (type === 'signup') {
-      // Check if user already exists
-      // const existingUser = await User.findOne({ hashedEmail });
-      // if (existingUser) {
-      //   return res.status(400).json({ message: 'User already exists with this email' });
-      // }
-
       // Create new user for signup
       const newUser = new User({ username, hashedEmail, otp });
       console.log("newUser to save: ", newUser);
@@ -105,15 +89,14 @@ app.post('/send-otp', async function (req, res) {
       return res.json({ message: 'OTP sent for signup' });
 
     } else if (type === 'signin') {
-      // Find user by email and update OTP
-      const user = await User.findOne({ email });
-      if (user) {
-        user.otp = otp;
-        await user.save();
-        return res.json({ message: 'OTP sent for signin' });
-      } else {
+      const user = await User.findOne({hashedEmail});
+      console.log("user found: ", user);
+      if (!user) {
         return res.status(404).json({ message: 'User not found' });
       }
+      user.otp = otp;
+      await user.save();
+      return res.json({ message: 'OTP sent for signin' });
     } else {
       return res.status(400).json({ message: 'Invalid request type' });
     }
@@ -125,21 +108,35 @@ app.post('/send-otp', async function (req, res) {
 
 
 app.post('/verify-otp', async function (req, res) {
-  const { username, otp } = req.body;
-
+  const { otp, type } = req.body;
+  
   try {
-    const user = await User.findOne({ username: username });
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-    if (user.otp === Number(otp)) {
-      res.json({ isValid: true });
+    let user;
+    if (type === 'signup') {
+      const {username} = req.body
+      user = await User.findOne({ username: username });
+    } else if (type === 'signin') {
+      const {email} = req.body;
+      const hashedEmail = crypto.pbkdf2Sync(email, process.env.SALT, 1000, 64, 'sha512').toString('hex');
+      user = await User.findOne({ hashedEmail: hashedEmail });
     } else {
-      res.json({ isValid: false });
+      return res.status(400).json({ message: 'Invalid request type' });
     }
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Use a constant-time comparison
+    const isValidOTP = crypto.timingSafeEqual(
+      Buffer.from(user.otp.toString()),
+      Buffer.from(otp)
+    );
+
+    res.json({ isValid: isValidOTP });
   } catch (error) {
     console.error('Error verifying OTP:', error);
-    res.status(500).json({ isValid: false });
+    res.status(500).json({ message: 'Internal server error' });
   }
 });
 
@@ -177,9 +174,11 @@ app.post('/signup', async (req, res) => {
 
 
 app.post('/signin', async (req, res) => {
-  const { email } = req.body
-  await User.updateOne({ email }, { $unset: { otp: "" } });
-  res.status(200).json({ message: 'Signup successful' });
+  const { email } = req.body;
+  const hashedEmail = crypto.pbkdf2Sync(email, process.env.SALT, 1000, 64, 'sha512').toString('hex');
+  await User.updateOne({ hashedEmail }, { $unset: { otp: "" } });
+  const updatedUser = await User.findOne({ hashedEmail });
+  res.status(200).json({ message: 'Signup successful', username: updatedUser.username });
 });
 
 app.post('/getDetails', async (req, res) => {
@@ -197,21 +196,27 @@ app.post('/getDetails', async (req, res) => {
   }
 });
 
-app.post('/newpost', async function(req, res) {
+app.post('/newpost', async function (req, res) {
   const { title, content, category, username, college, department, passoutYear } = req.body;
   const likes = 0;
   const comments = [];
   let commentsCount = comments.length;
   const newPost = new Post({ title, content, category, username, college, department, passoutYear, comments, commentsCount, likes });
-      await newPost.save();
-      return res.json({ message: 'New Post added.' });
+  await newPost.save();
+  return res.json({ message: 'New Post added.' });
 
 });
 
-app.get('/api/posts', async function(req, res) {
+app.get('/api/posts/:type', async function (req, res) {
   try {
-    const foundPosts = await Post.find({}).lean();
-    res.json(foundPosts);
+    const {type} = req.params;
+    if(type === 'home'){
+      const foundPosts = await Post.find({}).lean();
+      res.json(foundPosts);
+    }else {
+      const foundPosts = await Post.find({category: type}).lean();
+      res.json(foundPosts);
+    }
   } catch (e) {
     console.error(e);
     res.status(500).json({ error: 'An error occurred while fetching posts' });
@@ -265,7 +270,7 @@ app.get('/api/posts/:postId/like-status', async (req, res) => {
   }
 });
 
-app.get('/api/post/:postId', async function(req, res) {
+app.get('/api/post/:postId', async function (req, res) {
   const { postId } = req.params;
   try {
     const post = await Post.findById(postId);
@@ -279,7 +284,7 @@ app.get('/api/post/:postId', async function(req, res) {
   }
 });
 
-app.get('/api/post/:postId/comments', async function(req, res) {
+app.get('/api/post/:postId/comments', async function (req, res) {
   const { postId } = req.params;
   try {
     const post = await Post.findById(postId);
@@ -294,7 +299,7 @@ app.get('/api/post/:postId/comments', async function(req, res) {
   }
 });
 
-app.post("/api/post/:postId/add-comment", async function(req, res) {
+app.post("/api/post/:postId/add-comment", async function (req, res) {
   const { postId } = req.params;
   const { content, username, passoutYear, department, college } = req.body;
 

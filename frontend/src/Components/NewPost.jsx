@@ -16,11 +16,16 @@ const NewPost = ( ) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:5000/newpost", { title, content, category, username, college, department, passoutYear });
-      alert("New Post added successfully!!");
+      if(isLoggedIn){
+        await axios.post("http://localhost:5000/newpost", { title, content, category, username, college, department, passoutYear });
+        alert("New Post added successfully!!");
+      } else{
+        alert("Please signin to add post.");
+      }
       setTitle('');
       setContent('');
       setCategory('');
+      
     } catch (error) {
       console.error("Error adding new post:", error);
       alert("Failed to add new post. Please try again later.");
