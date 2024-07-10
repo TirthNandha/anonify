@@ -71,5 +71,5 @@
     - make the sign out in the profile section button working. (done)
     - hash + add salt to the email while storing in the db.
     - create a profile page
-    - create different pages that area in the categories section
+    - create different pages that area in the categories section.(to be done)
 
