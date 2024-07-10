@@ -7,14 +7,11 @@ export const DataContext = createContext();
 export const DataProvider = ({ children }) => {
   const [data, setData] = useState({ college: '', department: '', passoutYear: '', username: '' });
   const { user } = useAuth();
-  console.log("user: ", user);
 
   useEffect(() => {
     async function getDetails(username) {
       try {
-        console.log("email to get details: ", username);
         const response = await axios.post("http://localhost:5000/getDetails", { username });
-        console.log("response: ", response);
         const { department, passoutYear, college, username: responseUsername } = response.data;
         setData({ department, passoutYear, college, username: responseUsername });
       } catch (error) {
@@ -23,7 +20,6 @@ export const DataProvider = ({ children }) => {
     }
   
     if (user && user.username) {
-      console.log("user.username: ", user.username);
       getDetails(user.username);
     }
   }, [user]);

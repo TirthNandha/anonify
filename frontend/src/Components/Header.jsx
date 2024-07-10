@@ -92,7 +92,7 @@ const Header = () => {
             onClose={handleProfileMenuClose}
           >
             <MenuItem onClick={handleProfileMenuClose}>Profile</MenuItem>
-            <MenuItem onClick={handleSignOut}>Sign Out</MenuItem>
+            {isLoggedIn && <MenuItem onClick={handleSignOut}>Sign Out</MenuItem>}
           </Menu>
         </div>
       </div>
