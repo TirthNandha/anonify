@@ -12,7 +12,7 @@ import Link from '@mui/material/Link';
 
 
 function Categories() {
-    return(
+    return (
         <List>
             <Link color="no-color" underline='none' href="/">
                 <ListItem>
@@ -22,50 +22,58 @@ function Categories() {
                         selected={false}
                         variant="soft"
                     >
-                    <ListItemDecorator><Home /></ListItemDecorator>
-                    
+                        <ListItemDecorator><Home /></ListItemDecorator>
+
                         <ListItemContent>Home</ListItemContent>
                         <KeyboardArrowRightIcon />
                     </ListItemButton>
                 </ListItem>
             </Link>
-            
-            <ListItem>
-                <ListItemButton
-                    color="neutral"
-                    disabled={false}
-                    selected={false}
-                    variant="soft"
-                >
-                <ListItemDecorator><SchoolIcon /></ListItemDecorator>
-                    <ListItemContent>Admission</ListItemContent>
-                    <KeyboardArrowRightIcon />
-                </ListItemButton>
-            </ListItem>
-            <ListItem>
-                <ListItemButton
-                    color="neutral"
-                    disabled={false}
-                    selected={false}
-                    variant="soft"
-                >
-                <ListItemDecorator><RedeemIcon /></ListItemDecorator>
-                    <ListItemContent>Placements</ListItemContent>
-                    <KeyboardArrowRightIcon />
-                </ListItemButton>
-            </ListItem>
-            <ListItem>
-                <ListItemButton
-                    color="neutral"
-                    disabled={false}
-                    selected={false}
-                    variant="soft"
-                >
-                <ListItemDecorator><LiveHelpIcon /></ListItemDecorator>
-                    <ListItemContent>General queries</ListItemContent>
-                    <KeyboardArrowRightIcon />
-                </ListItemButton>
-            </ListItem>
+
+            <Link color="no-color" underline='none' href="/admission">
+                <ListItem>
+                    <ListItemButton
+                        color="neutral"
+                        disabled={false}
+                        selected={false}
+                        variant="soft"
+                    >
+                        <ListItemDecorator><SchoolIcon /></ListItemDecorator>
+                        <ListItemContent>Admission</ListItemContent>
+                        <KeyboardArrowRightIcon />
+                    </ListItemButton>
+                </ListItem>
+            </Link>
+
+            <Link color="no-color" underline='none' href="/placements">
+                <ListItem>
+                    <ListItemButton
+                        color="neutral"
+                        disabled={false}
+                        selected={false}
+                        variant="soft"
+                    >
+                        <ListItemDecorator><RedeemIcon /></ListItemDecorator>
+                        <ListItemContent>Placements</ListItemContent>
+                        <KeyboardArrowRightIcon />
+                    </ListItemButton>
+                </ListItem>
+            </Link>
+
+            <Link color="no-color" underline='none' href="/general-queries">
+                <ListItem>
+                    <ListItemButton
+                        color="neutral"
+                        disabled={false}
+                        selected={false}
+                        variant="soft"
+                    >
+                        <ListItemDecorator><LiveHelpIcon /></ListItemDecorator>
+                        <ListItemContent>General queries</ListItemContent>
+                        <KeyboardArrowRightIcon />
+                    </ListItemButton>
+                </ListItem>
+            </Link>
         </List>
     )
 }

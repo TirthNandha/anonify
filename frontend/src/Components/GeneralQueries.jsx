@@ -8,8 +8,8 @@ function Home() {
     return (
         <div>
             <Header />
-            <Title title={"Home"}/>
-            <Layout type={"home"}/>
+            <Title title={"General Queries"}/>
+            <Layout type={"General"}/>
 
         </div>
     )

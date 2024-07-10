@@ -77,8 +77,7 @@ function SignUp() {
     event.preventDefault();
     const { passoutYear, college, department } = fetchDetails(email);
     try {
-      const response = axios.post('http://localhost:5000/signup', { username, passoutYear, college, department})
-  
+      const response = await axios.post('http://localhost:5000/signup', { username, passoutYear, college, department})
       if (response.status === 200) {
         // Signup successful
         const userData = {
