@@ -14,7 +14,7 @@ function DisplayPost() {
     const { department, passoutYear, username, college } = useContext(DataContext);
 
     useEffect(() => {
-        const fetchPostAndComments = async () => {
+        const fetchPostAndComments = async (e) => {
             try {
                 const [postResponse, commentsResponse] = await Promise.all([
                     axios.get(`http://localhost:5000/api/post/${postId}`),

@@ -14,7 +14,7 @@ const NewPost = ( ) => {
   const {college, department, passoutYear, username} = useContext(DataContext);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    // e.preventDefault();
     try {
       if(isLoggedIn){
         await axios.post("http://localhost:5000/newpost", { title, content, category, username, college, department, passoutYear });
