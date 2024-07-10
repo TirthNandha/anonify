@@ -8,8 +8,8 @@ function RenderPost(props) {
     const {username} = useContext(DataContext);
 
     useEffect(() => {
-        // Fetch posts from the database
         fetchPosts();
+        // eslint-disable-next-line
     }, []);
 
     const fetchPosts = async () => {
