@@ -95,7 +95,6 @@ function SignIn() {
   const handleOtpValidation = async () => {
     try {
       const response = await axios.post('http://localhost:5000/verify-otp', { email, otp, type: 'signin' });
-      console.log("resoonse from verify otp: ", response);
       if (response.data.isValid) {
         setOtpValidationMessage("OTP verified Successfully!!");
         setIsOtpValid(true);

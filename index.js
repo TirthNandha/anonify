@@ -76,21 +76,17 @@ app.get('/', function (req, res) {
 })
 app.post('/send-otp', async function (req, res) {
   const { username, email, type } = req.body;
-  console.log("email received:", email);
   const otp = sendOTP(email);
   const hashedEmail = crypto.pbkdf2Sync(email, process.env.SALT, 1000, 64, 'sha512').toString('hex');
-  console.log("hashedEmail: ", hashedEmail);
   try {
     if (type === 'signup') {
       // Create new user for signup
       const newUser = new User({ username, hashedEmail, otp });
-      console.log("newUser to save: ", newUser);
       await newUser.save();
       return res.json({ message: 'OTP sent for signup' });
 
     } else if (type === 'signin') {
       const user = await User.findOne({hashedEmail});
-      console.log("user found: ", user);
       if (!user) {
         return res.status(404).json({ message: 'User not found' });
       }
