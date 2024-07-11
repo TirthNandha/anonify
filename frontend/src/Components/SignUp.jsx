@@ -53,31 +53,9 @@ function SignUp() {
     checkUsername();
   }, [username]);
 
-  // useEffect(() => {
-  //   const checkEmail = async () => {
-  //     if (email) {
-  //       try {
-  //         const response = await axios.post('http://localhost:5000/check-email', { email, type: 'signup' });
-  //         setIsEmailValid(response.data.isUnique);
-  //       } catch (error) {
-  //         console.error('Error checking username:', error);
-  //       }
-  //     } else {
-  //       setIsEmailValid(null);
-  //     }
-  //   };
-
-  //   checkEmail();
-  // }, [email]);
-
-
   const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log("email to fetch details: ", email);
     const { passoutYear, college, department } = fetchDetails(email);
-    console.log("passout: ", passoutYear);
-    console.log("college: ", college);
-    console.log("department: ", department);
     try {
       const response = await axios.post('http://localhost:5000/signup', { username, college, department, passoutYear })
 
@@ -132,16 +110,6 @@ function SignUp() {
     const emailValid = validateEmail(email);
     setIsEmailValid(emailValid);
 
-    // if (emailValid) {
-    //   try {
-    //     const response = await axios.post('http://localhost:5000/check-email', { email, type: 'signup' });
-    //     setIsEmailUnique(response.data.isUnique);
-    //   } catch (error) {
-    //     console.error('Error checking email:', error);
-    //   }
-    // } else {
-    //   setIsEmailUnique(null); // Reset email uniqueness check if the email is invalid
-    // }
   };
 
   async function handleOtpSent() {

@@ -3,20 +3,19 @@ import React, { useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import {DataContext} from '../DataContext';
 
-function RenderPost() {
+function RenderPost(props) {
     const [posts, setPosts] = useState([]);
     const {username} = useContext(DataContext);
 
     useEffect(() => {
-        // Fetch posts from the database
         fetchPosts();
+        // eslint-disable-next-line
     }, []);
 
     const fetchPosts = async () => {
         try {
-            // Make an API call to fetch posts from the database
-            const response = await axios.get("http://localhost:5000/api/posts");
-            console.log("response.data to render: ", response.data);
+            // Make an API call to fetch all posts from the database
+            const response = await axios.get("http://localhost:5000/api/posts/" + props.type);
             setPosts(response.data);
         } catch (error) {
             console.error('Error fetching posts:', error);

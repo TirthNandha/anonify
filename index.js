@@ -207,10 +207,16 @@ app.post('/newpost', async function (req, res) {
 
 });
 
-app.get('/api/posts', async function (req, res) {
+app.get('/api/posts/:type', async function (req, res) {
   try {
-    const foundPosts = await Post.find({}).lean();
-    res.json(foundPosts);
+    const {type} = req.params;
+    if(type === 'home'){
+      const foundPosts = await Post.find({}).lean();
+      res.json(foundPosts);
+    }else {
+      const foundPosts = await Post.find({category: type}).lean();
+      res.json(foundPosts);
+    }
   } catch (e) {
     console.error(e);
     res.status(500).json({ error: 'An error occurred while fetching posts' });

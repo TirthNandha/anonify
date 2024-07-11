@@ -1,6 +1,5 @@
 import React from "react";
 import "../styles/App.css";
-import Home from "./Home";
 import { BrowserRouter as Router, Route, Routes} from 'react-router-dom';
 import SignIn from "./Signin";
 import SignUp from "./SignUp";
@@ -8,6 +7,10 @@ import NewPost from "./NewPost";
 import { AuthProvider } from '../AuthContext';
 import { DataProvider } from "../DataContext";
 import PostPage from "./PostPage";
+import Home from "./Home";
+import Admission from "./Admission";
+import Placements from "./Placements";
+import GeneralQueries from "./GeneralQueries";
 
 function App() {
   return (
@@ -20,6 +23,9 @@ function App() {
               <Route path="/Signup" element={<SignUp />} />
               <Route path="/Newpost" element={<NewPost />} />
               <Route path="/post/:postId" element={<PostPage />} />
+              <Route path="/admission" element={<Admission />} />
+              <Route path="/placements" element={<Placements />} />
+              <Route path="/general-queries" element={<GeneralQueries />} />
             </Routes>
           </Router>
         </DataProvider>
