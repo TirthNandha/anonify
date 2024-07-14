@@ -195,6 +195,7 @@ app.post('/api/logout', (req, res) => {
 
 app.get('/api/validate-token', async (req, res) => {
   const token = req.headers.authorization?.split(' ')[1];
+  console.log("token from api: ", token);
 
   if (!token) {
     return res.status(401).json({ message: 'No token provided' });
@@ -202,6 +203,7 @@ app.get('/api/validate-token', async (req, res) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log("decoded from api: ", decoded);
     const user = await User.findById(decoded.userId);
 
     if (!user) {
@@ -210,6 +212,7 @@ app.get('/api/validate-token', async (req, res) => {
 
     if (user._id.toString() !== req.session.userId?.toString()) {
       return res.status(401).json({ message: 'Session invalid' });
+      console.log("session out");
     }
 
     res.json({ 

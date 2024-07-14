@@ -9,28 +9,33 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
+    console.log('Retrieved token on page load:', token);
     if (token) {
       validateToken(token);
     }
+    // eslint-disable-next-line
   }, []);
 
   const validateToken = async (token) => {
     try {
       const response = await axios.get('http://localhost:5000/api/validate-token', {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { authorization: `Bearer ${token}` }
       });
       setIsLoggedIn(true);
       setUser(response.data.user);
     } catch (error) {
+      console.log("error validating token: ", error);
       logout();
     }
   };
 
   const login = async (credentials) => {
     try {
-      setIsLoggedIn(true);
+      // setIsLoggedIn(true);
+      console.log('Logging in with credentials:', credentials); // Debug log
       // const response = await axios.post('http://localhost:5000/signin', credentials);
       const { token, user } = credentials.data;
+      console.log('Storing token:', token); // Debug log
       localStorage.setItem('token', token);
       setIsLoggedIn(true);
       setUser(user);
