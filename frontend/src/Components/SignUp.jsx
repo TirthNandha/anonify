@@ -67,7 +67,7 @@ function SignUp() {
           // Add any other user data you want to store
         };
 
-        login(userData);
+        login(response);
         navigate('/'); // Redirect to the root route
       } else {
         // Signup failed

@@ -8,6 +8,8 @@ const Post = require('./models/Post');
 const bcrypt = require('bcryptjs');
 require('dotenv').config();
 const crypto = require('crypto');
+const session = require('express-session');
+const jwt = require('jsonwebtoken');
 
 
 const app = express();
@@ -22,6 +24,13 @@ app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
+app.use(session({
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  cookie: { secure: process.env.NODE_ENV === 'production', maxAge: 24 * 60 * 60 * 1000 }
+}));
+
 
 mongoose.connect(process.env.DB_URI1)
 
@@ -80,11 +89,9 @@ app.post('/send-otp', async function (req, res) {
   const hashedEmail = crypto.pbkdf2Sync(email, process.env.SALT, 1000, 64, 'sha512').toString('hex');
   try {
     if (type === 'signup') {
-      // Create new user for signup
       const newUser = new User({ username, hashedEmail, otp });
       await newUser.save();
       return res.json({ message: 'OTP sent for signup' });
-
     } else if (type === 'signin') {
       const user = await User.findOne({hashedEmail});
       if (!user) {
@@ -140,8 +147,7 @@ app.post('/signup', async (req, res) => {
   try {
     const { username, college, department, passoutYear } = req.body;
 
-    // Update the user document
-    const result = await User.updateOne(
+    const result = await User.findOneAndUpdate(
       { username },
       {
         $set: {
@@ -150,31 +156,111 @@ app.post('/signup', async (req, res) => {
           passoutYear
         },
         $unset: { otp: "" }
-      }
+      },
+      { new: true } // This option returns the updated document
     );
 
-    if (result.matchedCount === 0) {
+    if (!result) {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    if (result.modifiedCount === 0) {
-      return res.status(400).json({ message: 'No changes were made' });
-    }
+    // Generate JWT
+    const token = jwt.sign({ userId: result._id }, process.env.JWT_SECRET, { expiresIn: '24h' });
 
-    res.status(200).json({ message: 'Signup successful' });
+    // Set session
+    req.session.userId = result._id;
+
+    res.status(200).json({
+      message: 'Signup completed successfully',
+      token,
+      user: {
+        id: result._id,
+        username: result.username
+      },
+      username: result.username
+    });
   } catch (error) {
-    console.error('Signup error:', error);
+    console.error('Signup completion error:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 });
+app.post('/api/logout', (req, res) => {
+  req.session.destroy(err => {
+    if (err) {
+      return res.status(500).json({ message: 'Could not log out, please try again' });
+    }
+    res.json({ message: 'Logged out successfully' });
+  });
+});
 
+app.get('/api/validate-token', async (req, res) => {
+  const token = req.headers.authorization?.split(' ')[1];
+
+  if (!token) {
+    return res.status(401).json({ message: 'No token provided' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.userId);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    if (user._id.toString() !== req.session.userId?.toString()) {
+      return res.status(401).json({ message: 'Session invalid' });
+    }
+
+    res.json({ 
+      user: { 
+        id: user._id, 
+        username: user.username,
+        email: user.email,
+        college: user.college,
+        department: user.department,
+        passoutYear: user.passoutYear
+      } 
+    });
+  } catch (error) {
+    res.status(401).json({ message: 'Invalid token' });
+  }
+});
 
 app.post('/signin', async (req, res) => {
-  const { email } = req.body;
-  const hashedEmail = crypto.pbkdf2Sync(email, process.env.SALT, 1000, 64, 'sha512').toString('hex');
-  await User.updateOne({ hashedEmail }, { $unset: { otp: "" } });
-  const updatedUser = await User.findOne({ hashedEmail });
-  res.status(200).json({ message: 'Signup successful', username: updatedUser.username });
+  try {
+    const { email } = req.body;
+    const hashedEmail = crypto.pbkdf2Sync(email, process.env.SALT, 1000, 64, 'sha512').toString('hex');
+    
+    // Update the user document to remove the OTP field
+    await User.updateOne({ hashedEmail }, { $unset: { otp: "" } });
+    
+    // Find the updated user
+    const updatedUser = await User.findOne({ hashedEmail });
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Generate JWT
+    const token = jwt.sign({ userId: updatedUser._id }, process.env.JWT_SECRET, { expiresIn: '24h' });
+
+    // Set session
+    req.session.userId = updatedUser._id;
+
+    res.status(200).json({ 
+      message: 'Signin successful',
+      token,
+      user: { 
+        id: updatedUser._id, 
+        username: updatedUser.username
+      },
+      username: updatedUser.username 
+    });
+  } catch (error) {
+    console.error('Signin error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
 });
 
 app.post('/getDetails', async (req, res) => {

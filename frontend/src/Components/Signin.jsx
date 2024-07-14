@@ -38,21 +38,21 @@ function SignIn() {
       // Send the signin request
       const response = await axios.post('http://localhost:5000/signin', { email });
 
-      if (response.status === 200) {
-        // Signin successful
-        const userData = {
-          email: email,
-          username: response.data.username
-          // Add any other user data you want to store
-          // You might want to fetch additional user data here or in a separate request
-        };
+      // if (response.status === 200) {
+      //   // Signin successful
+      //   const userData = {
+      //     email: email,
+      //     username: response.data.username
+      //     // Add any other user data you want to store
+      //     // You might want to fetch additional user data here or in a separate request
+      //   };
 
-        login(userData);
+        login(response);
         navigate('/'); // Redirect to the root route
-      } else {
-        // Signin failed
-        alert("Sign in failed. Please try again.");
-      }
+      // } else {
+      //   // Signin failed
+      //   alert("Sign in failed. Please try again.");
+      // }
     } catch (error) {
       console.error("Error during sign in:", error);
       alert("An error occurred during sign in. Please try again.");
