@@ -222,9 +222,9 @@ app.get('/api/validate-token', async (req, res) => {
         id: user._id,
         username: user.username,
         email: user.email,
-        college: user.college,
-        department: user.department,
-        passoutYear: user.passoutYear
+        // college: user.college,
+        // department: user.department,
+        // passoutYear: user.passoutYear
       }
     });
   } catch (error) {
@@ -256,7 +256,8 @@ app.post('/signin', async (req, res) => {
       token,
       user: {
         id: updatedUser._id,
-        username: updatedUser.username
+        username: updatedUser.username,
+        email: updatedUser.email
       },
       username: updatedUser.username
     });
