@@ -23,6 +23,7 @@ const SearchComponent = () => {
         }, 300);
 
         return () => clearTimeout(delayDebounceFn);
+        // eslint-disable-next-line
     }, [searchTerm]);
 
     useEffect(() => {

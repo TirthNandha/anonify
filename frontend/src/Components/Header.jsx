@@ -42,6 +42,14 @@ const Header = () => {
           <SearchComponent />
         </Box>
 
+        {!isLoggedIn && (
+            <Box className='Login' sx={{ marginRight: '16px' }}>
+              <Link href='Signin'>
+                <Button variant="outlined">Log In</Button>
+              </Link>
+            </Box>
+          )}
+
         <Box sx={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
           <Box className="newPost" sx={{ marginRight: '16px' }}>
             <Tooltip title="Create New Post" arrow>
@@ -54,15 +62,6 @@ const Header = () => {
               </IconButton>
             </Tooltip>
           </Box>
-
-
-          {!isLoggedIn && (
-            <Box className='Login' sx={{ marginRight: '16px' }}>
-              <Link href='Signin'>
-                <Button variant="outlined">Log In</Button>
-              </Link>
-            </Box>
-          )}
 
           <Box className="profile">
             <Tooltip title="Profile" arrow>
