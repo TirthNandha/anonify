@@ -130,7 +130,6 @@ app.post('/verify-otp', async function (req, res) {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // Use a constant-time comparison
     const isValidOTP = crypto.timingSafeEqual(
       Buffer.from(user.otp.toString()),
       Buffer.from(otp)
@@ -407,7 +406,32 @@ app.post("/api/post/:postId/add-comment", async function (req, res) {
     console.error('Error adding comment:', error);
     res.status(500).json({ success: false, message: 'Server error' });
   }
-})
+});
+
+app.get('/api/search', async (req, res) => {
+  try {
+    const searchTerm = req.query.term;
+    const posts = await Post.find({
+      $or: [
+        { title: { $regex: searchTerm, $options: 'i' } },
+        { content: { $regex: searchTerm, $options: 'i' } }
+      ]
+    })
+    .limit(10)
+    .select('title content');
+
+    const formattedResults = posts.map(post => ({
+      id: post._id,
+      title: post.title,
+      content: post.content.substring(0, 100) + '...'
+    }));
+
+    res.json(formattedResults);
+  } catch (error) {
+    console.error('Search error:', error);
+    res.status(500).json({ message: 'Error performing search' });
+  }
+});
 
 
 app.listen(process.env.PORT || 5000, function (req, res) {
