@@ -60,14 +60,7 @@ function SignUp() {
       const response = await axios.post('http://localhost:5000/signup', { username, college, department, passoutYear })
 
       if (response.status === 200) {
-        // Signup successful
-        const userData = {
-          email: email,
-          username: username,
-          // Add any other user data you want to store
-        };
-
-        login(userData);
+        login(response);
         navigate('/'); // Redirect to the root route
       } else {
         // Signup failed
