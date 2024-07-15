@@ -5,6 +5,8 @@ var cors = require('cors');
 const User = require('./models/User');
 const { sendOTP } = require('./utils/otp');
 const Post = require('./models/Post');
+const session = require('express-session');
+const jwt = require('jsonwebtoken');
 
 
 const app = express();
@@ -19,6 +21,12 @@ app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
+app.use(session({
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  cookie: { secure: process.env.NODE_ENV === 'production', maxAge: 24 * 60 * 60 * 1000 }
+}));
 
 mongoose.connect(process.env.DB_URI)
 
@@ -80,19 +88,18 @@ app.post('/send-otp', async function (req, res) {
 
   try {
     if (type === 'signup') {
-      // Check if user already exists
+
       const existingUser = await User.findOne({ email });
       if (existingUser) {
         return res.status(400).json({ message: 'User already exists with this email' });
       }
 
-      // Create new user for signup
       const newUser = new User({ username, email, otp });
       await newUser.save();
       return res.json({ message: 'OTP sent for signup' });
 
     } else if (type === 'signin') {
-      // Find user by email and update OTP
+
       const user = await User.findOne({ email });
       if (user) {
         user.otp = otp;
@@ -142,29 +149,122 @@ app.post('/signup', async (req, res) => {
           passoutYear
         },
         $unset: { otp: "" }
-      }
+      },
+      { new: true } // This option returns the updated document
     );
+
+    if (!result) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Generate JWT
+    const token = jwt.sign({ userId: result._id }, process.env.JWT_SECRET, { expiresIn: '24h' });
+
+    // Set session
+    req.session.userId = result._id;
 
     if (result.matchedCount === 0) {
       return res.status(404).json({ message: 'User not found' });
     }
 
     if (result.modifiedCount === 0) {
-      return res.status(400).json({ message: 'No changes were made' });
+      return res.status(400).json({
+        message: 'No changes were made', token,
+        user: {
+          id: result._id,
+          username: result.username
+        },
+        username: result.username
+      });
     }
 
-    res.status(200).json({ message: 'Signup successful' });
+    res.status(200).json({
+      message: 'Signup completed successfully',
+      token,
+      user: {
+        id: result._id,
+        username: result.username
+      },
+      username: result.username
+    });
   } catch (error) {
     console.error('Signup error:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 });
 
+app.post('/api/logout', (req, res) => {
+  req.session.destroy(err => {
+    if (err) {
+      return res.status(500).json({ message: 'Could not log out, please try again' });
+    }
+    res.json({ message: 'Logged out successfully' });
+  });
+});
+
+app.get('/api/validate-token', async (req, res) => {
+  const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
+
+  if (!token) {
+    return res.status(401).json({ message: 'No token provided' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.userId);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.json({
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        // college: user.college,
+        // department: user.department,
+        // passoutYear: user.passoutYear
+      }
+    });
+  } catch (error) {
+    console.error("Token verification error:", error);
+    res.status(401).json({ message: 'Invalid token', error: error.message });
+  }
+});
+
+
 
 app.post('/signin', async (req, res) => {
-  const { email } = req.body
-  await User.updateOne({ email }, { $unset: { otp: "" } });
-  res.status(200).json({ message: 'Signup successful' });
+  try {
+    const { email } = req.body
+    await User.updateOne({ email }, { $unset: { otp: "" } });
+    const updatedUser = await User.findOne({ email });
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Generate JWT
+    const token = jwt.sign({ userId: updatedUser._id }, process.env.JWT_SECRET, { expiresIn: '24h' });
+
+    // Set session
+    req.session.userId = updatedUser._id;
+
+    res.status(200).json({
+      message: 'Signin successful',
+      token,
+      user: {
+        id: updatedUser._id,
+        username: updatedUser.username,
+        email: updatedUser.email
+      },
+      username: updatedUser.username
+    });
+  } catch (error) {
+    console.error('Signin error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
 });
 
 app.post('/getDetails', async (req, res) => {
@@ -182,26 +282,26 @@ app.post('/getDetails', async (req, res) => {
   }
 });
 
-app.post('/newpost', async function(req, res) {
+app.post('/newpost', async function (req, res) {
   const { title, content, category, username, college, department, passoutYear } = req.body;
   const likes = 0;
   const comments = [];
   let commentsCount = comments.length;
   const newPost = new Post({ title, content, category, username, college, department, passoutYear, comments, commentsCount, likes });
-      await newPost.save();
-      console.log("new Post added.");
-      return res.json({ message: 'New Post added.' });
+  await newPost.save();
+  console.log("new Post added.");
+  return res.json({ message: 'New Post added.' });
 
 });
 
 app.get('/api/posts/:type', async function (req, res) {
   try {
-    const {type} = req.params;
-    if(type === 'home'){
+    const { type } = req.params;
+    if (type === 'home') {
       const foundPosts = await Post.find({}).lean();
       res.json(foundPosts);
-    }else {
-      const foundPosts = await Post.find({category: type}).lean();
+    } else {
+      const foundPosts = await Post.find({ category: type }).lean();
       res.json(foundPosts);
     }
   } catch (e) {
@@ -257,7 +357,7 @@ app.get('/api/posts/:postId/like-status', async (req, res) => {
   }
 });
 
-app.get('/api/post/:postId', async function(req, res) {
+app.get('/api/post/:postId', async function (req, res) {
   const { postId } = req.params;
   try {
     const post = await Post.findById(postId);
@@ -271,7 +371,7 @@ app.get('/api/post/:postId', async function(req, res) {
   }
 });
 
-app.get('/api/post/:postId/comments', async function(req, res) {
+app.get('/api/post/:postId/comments', async function (req, res) {
   const { postId } = req.params;
   try {
     const post = await Post.findById(postId);
@@ -286,7 +386,7 @@ app.get('/api/post/:postId/comments', async function(req, res) {
   }
 });
 
-app.post("/api/post/:postId/add-comment", async function(req, res) {
+app.post("/api/post/:postId/add-comment", async function (req, res) {
   const { postId } = req.params;
   const { content, username, passoutYear, department, college } = req.body;
 
@@ -315,7 +415,32 @@ app.post("/api/post/:postId/add-comment", async function(req, res) {
     console.error('Error adding comment:', error);
     res.status(500).json({ success: false, message: 'Server error' });
   }
-})
+});
+
+app.get('/api/search', async (req, res) => {
+  try {
+    const searchTerm = req.query.term;
+    const posts = await Post.find({
+      $or: [
+        { title: { $regex: searchTerm, $options: 'i' } },
+        { content: { $regex: searchTerm, $options: 'i' } }
+      ]
+    })
+    .limit(10)
+    .select('title content');
+
+    const formattedResults = posts.map(post => ({
+      id: post._id,
+      title: post.title,
+      content: post.content.substring(0, 100) + '...'
+    }));
+
+    res.json(formattedResults);
+  } catch (error) {
+    console.error('Search error:', error);
+    res.status(500).json({ message: 'Error performing search' });
+  }
+});
 
 
 app.listen(process.env.PORT || 5000, function (req, res) {
