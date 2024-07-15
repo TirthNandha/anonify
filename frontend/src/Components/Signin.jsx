@@ -41,15 +41,8 @@ function SignIn() {
       const response = await axios.post('http://localhost:5000/signin', { email });
       
       if (response.status === 200) {
-        // Signin successful
-        const userData = {
-          email: email
-          // Add any other user data you want to store
-          // You might want to fetch additional user data here or in a separate request
-        };
-        console.log("userData: ", userData);
         
-        login(userData);
+        login(response);
         navigate('/'); // Redirect to the root route
       } else {
         // Signin failed
