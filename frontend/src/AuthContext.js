@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import axios from 'axios'; // Assuming you're using axios for API calls
+import axios from 'axios';
 
 const AuthContext = createContext();
 
@@ -9,7 +9,6 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    console.log('Retrieved token on page load:', token);
     if (token) {
       validateToken(token);
     }
@@ -19,23 +18,19 @@ export const AuthProvider = ({ children }) => {
   const validateToken = async (token) => {
     try {
       const response = await axios.get('http://localhost:5000/api/validate-token', {
-        headers: { authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` }
       });
       setIsLoggedIn(true);
       setUser(response.data.user);
     } catch (error) {
-      console.log("error validating token: ", error);
-      logout();
+      console.error("Error validating token:", error.response ? error.response.data : error.message);
+      // logout();
     }
   };
 
   const login = async (credentials) => {
     try {
-      // setIsLoggedIn(true);
-      console.log('Logging in with credentials:', credentials); // Debug log
-      // const response = await axios.post('http://localhost:5000/signin', credentials);
       const { token, user } = credentials.data;
-      console.log('Storing token:', token); // Debug log
       localStorage.setItem('token', token);
       setIsLoggedIn(true);
       setUser(user);

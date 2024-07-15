@@ -194,25 +194,18 @@ app.post('/api/logout', (req, res) => {
 });
 
 app.get('/api/validate-token', async (req, res) => {
-  const token = req.headers.authorization?.split(' ')[1];
-  console.log("token from api: ", token);
-
+  const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
+  
   if (!token) {
     return res.status(401).json({ message: 'No token provided' });
   }
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log("decoded from api: ", decoded);
     const user = await User.findById(decoded.userId);
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
-    }
-
-    if (user._id.toString() !== req.session.userId?.toString()) {
-      return res.status(401).json({ message: 'Session invalid' });
-      console.log("session out");
     }
 
     res.json({ 
@@ -226,7 +219,8 @@ app.get('/api/validate-token', async (req, res) => {
       } 
     });
   } catch (error) {
-    res.status(401).json({ message: 'Invalid token' });
+    console.error("Token verification error:", error);
+    res.status(401).json({ message: 'Invalid token', error: error.message });
   }
 });
 
