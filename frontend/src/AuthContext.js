@@ -24,7 +24,7 @@ export const AuthProvider = ({ children }) => {
       setUser(response.data.user);
     } catch (error) {
       console.error("Error validating token:", error.response ? error.response.data : error.message);
-      // logout();
+      logout();
     }
   };
 
