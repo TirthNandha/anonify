@@ -79,9 +79,6 @@ app.post('/check-email', async (req, res) => {
   }
 });
 
-app.get('/', function (req, res) {
-  res.send("API home page")
-})
 app.post('/send-otp', async function (req, res) {
   const { username, email, type } = req.body;
 
@@ -448,3 +445,10 @@ const server = createServer(app);
 module.exports = (req, res) => {
   server.emit('request', req, res);
 };
+
+if (require.main === module) {
+  const port = process.env.PORT || 5000;
+  server.listen(port, () => {
+    console.log(`Local server running on http://localhost:${port}`);
+  });
+}

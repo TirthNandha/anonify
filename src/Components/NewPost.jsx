@@ -6,6 +6,8 @@ import {useAuth} from '../AuthContext'
 import axios from 'axios';
 import {DataContext} from "../DataContext"
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 const NewPost = ( ) => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
@@ -17,7 +19,7 @@ const NewPost = ( ) => {
     // e.preventDefault();
     try {
       if(isLoggedIn){
-        await axios.post("http://localhost:5000/newpost", { title, content, category, username, college, department, passoutYear });
+        await axios.post(`${API_URL}/newpost`, { title, content, category, username, college, department, passoutYear });
         alert("New Post added successfully!!");
       } else{
         alert("Please signin to add post.");

@@ -4,6 +4,8 @@ import SearchIcon from '@mui/icons-material/Search';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 const SearchComponent = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [searchResults, setSearchResults] = useState([]);
@@ -41,7 +43,7 @@ const SearchComponent = () => {
 
     const searchItems = async () => {
         try {
-            const response = await axios.get(`http://localhost:5000/api/search?term=${searchTerm}`);
+            const response = await axios.get(`${API_URL}/api/search?term=${searchTerm}`);
             setSearchResults(response.data);
         } catch (error) {
             console.error('Error searching items:', error);

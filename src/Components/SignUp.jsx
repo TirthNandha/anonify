@@ -17,6 +17,8 @@ import { useNavigate } from 'react-router-dom';
 import {fetchDetails} from '../utils/fetchDetails';
 import { useAuth } from '../AuthContext';
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 function SignUp() {
 
   const allowedDomains = ['vgecg.ac.in'];
@@ -42,7 +44,7 @@ function SignUp() {
     const checkUsername = async () => {
       if (username) {
         try {
-          const response = await axios.post('http://localhost:5000/check-username', { username });
+          const response = await axios.post(`${API_URL}/check-username`, { username });
           setIsUsernameValid(response.data.isUnique);
         } catch (error) {
           console.error('Error checking username:', error);
@@ -59,7 +61,7 @@ function SignUp() {
     const checkEmail = async () => {
       if (email) {
         try {
-          const response = await axios.post('http://localhost:5000/check-email', { email, type: 'signup' });
+          const response = await axios.post(`${API_URL}/check-email`, { email, type: 'signup' });
           setIsEmailValid(response.data.isUnique);
         } catch (error) {
           console.error('Error checking username:', error);
@@ -77,7 +79,7 @@ function SignUp() {
     event.preventDefault();
     const { passoutYear, college, department } = fetchDetails(email);
     try {
-      const response = await axios.post('http://localhost:5000/signup', { username, passoutYear, college, department})
+      const response = await axios.post(`${API_URL}/signup`, { username, passoutYear, college, department})
       if (response.status === 200) {
         login(response);
         navigate('/'); // Redirect to the root route
@@ -95,7 +97,7 @@ function SignUp() {
 
   const handleOtpValidation = async () => {
     try {
-      const response = await axios.post('http://localhost:5000/verify-otp', { email, otp });
+      const response = await axios.post(`${API_URL}/verify-otp`, { email, otp });
       if (response.data.isValid) {
         setOtpValidationMessage("OTP verified Successfully!!");
         setIsOtpValid(true);
@@ -124,7 +126,7 @@ function SignUp() {
 
     if (emailValid) {
       try {
-        const response = await axios.post('http://localhost:5000/check-email', { email, type: 'signup' });
+        const response = await axios.post(`${API_URL}/check-email`, { email, type: 'signup' });
         setIsEmailUnique(response.data.isUnique);
       } catch (error) {
         console.error('Error checking email:', error);
@@ -137,7 +139,7 @@ function SignUp() {
   function handleOtpSent() {
     if (validateEmail(email)) {
       try {
-        axios.post('http://localhost:5000/send-otp', { username, email, type: 'signup' });
+        axios.post(`${API_URL}/send-otp`, { username, email, type: 'signup' });
         setOtpMessage('OTP sent!');
         setIsOtpSent(true);
       } catch (error) {

@@ -5,6 +5,8 @@ import CommentIcon from '@mui/icons-material/Comment';
 import axios from 'axios';
 import { useAuth } from '../AuthContext';
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 const Post = ({ college, department, passoutYear, title, content, commentsCount, username, postId, initialLikes, currentUser }) => {
   const [isLiked, setIsLiked] = useState(false);
   const [likes, setLikes] = useState(initialLikes);
@@ -14,7 +16,7 @@ const Post = ({ college, department, passoutYear, title, content, commentsCount,
     // Check if the user has already liked the post
     async function fetchLikeStatus() {
       try {
-        const response = await axios.get(`http://localhost:5000/api/posts/${postId}/like-status`, { params: { username: currentUser } });
+        const response = await axios.get(`${API_URL}/api/posts/${postId}/like-status`, { params: { username: currentUser } });
         if (response.data.isLiked) {
           setIsLiked(true);
         }
@@ -28,7 +30,7 @@ const Post = ({ college, department, passoutYear, title, content, commentsCount,
   async function handleLike() {
     try {
       if(isLoggedIn){
-        const response = await axios.post(`http://localhost:5000/api/posts/${postId}/like`, { username: currentUser });
+        const response = await axios.post(`${API_URL}/api/posts/${postId}/like`, { username: currentUser });
         if (response.data.success) {
           setIsLiked(response.data.isLiked);
           setLikes(response.data.likeCount);

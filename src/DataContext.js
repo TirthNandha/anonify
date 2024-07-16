@@ -4,6 +4,8 @@ import { useAuth } from './AuthContext';
 
 export const DataContext = createContext();
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 export const DataProvider = ({ children }) => {
   const [data, setData] = useState({ college: '', department: '', passoutYear: '', username: '' });
   const { user } = useAuth();
@@ -11,7 +13,7 @@ export const DataProvider = ({ children }) => {
   useEffect(() => {
     async function getDetails(email) {
       try {
-        const response = await axios.post("http://localhost:5000/getDetails", { email });
+        const response = await axios.post(`${API_URL}/getDetails`, { email });
         const { department, passoutYear, college, username } = response.data;
         setData({ department, passoutYear, college, username });
       } catch (error) {

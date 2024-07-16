@@ -7,6 +7,8 @@ import { Box, Typography, Divider, TextareaAutosize, Button } from '@mui/materia
 import Comment from './Comment';
 import { useAuth } from '../AuthContext';
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 function DisplayPost() {
     const [post, setPost] = useState(null);
     const [comments, setComments] = useState([]);
@@ -19,8 +21,8 @@ function DisplayPost() {
         const fetchPostAndComments = async (e) => {
             try {
                 const [postResponse, commentsResponse] = await Promise.all([
-                    axios.get(`http://localhost:5000/api/post/${postId}`),
-                    axios.get(`http://localhost:5000/api/post/${postId}/comments`)
+                    axios.get(`${API_URL}/api/post/${postId}`),
+                    axios.get(`${API_URL}/api/post/${postId}/comments`)
                 ]);
                 setPost(postResponse.data);
                 setComments(commentsResponse.data);
@@ -41,7 +43,7 @@ function DisplayPost() {
                         alert("Comment cannot be empty");
                         return;
                     }
-                    const response = await axios.post(`http://localhost:5000/api/post/${postId}/add-comment`, {
+                    const response = await axios.post(`${API_URL}/api/post/${postId}/add-comment`, {
                         content: newComment,
                         username: username,
                         passoutYear: passoutYear,
