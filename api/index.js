@@ -13,7 +13,7 @@ const { createServer } = require('http');
 const app = express();
 
 const corsOptions = {
-  origin: "https://anonify-5rcdgap5k-tirthnandhas-projects.vercel.app",
+  origin: "https://anonify-five.vercel.app",
   methods: ['GET', 'HEAD', 'POST', 'PUT', 'DELETE'],
   credentials: true
 }
