@@ -7,6 +7,7 @@ const { sendOTP } = require('./utils/otp');
 const Post = require('./models/Post');
 const session = require('express-session');
 const jwt = require('jsonwebtoken');
+const { createServer } = require('http');
 
 
 const app = express();
@@ -442,7 +443,8 @@ app.get('/api/search', async (req, res) => {
   }
 });
 
+const server = createServer(app);
 
-app.listen(process.env.PORT || 5000, function (req, res) {
-  console.log("Server started on post 5000");
-})
+module.exports = (req, res) => {
+  server.emit('request', req, res);
+};

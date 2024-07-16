@@ -17,6 +17,8 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../AuthContext';
 
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 function SignIn() {
 
   const allowedDomains = ['vgecg.ac.in'];
@@ -38,7 +40,7 @@ function SignIn() {
     event.preventDefault();
     try {
       // Send the signin request
-      const response = await axios.post('http://localhost:5000/signin', { email });
+      const response = await axios.post(`${API_URL}/signin`, { email });
       
       if (response.status === 200) {
         
@@ -60,7 +62,7 @@ function SignIn() {
 
     if (validateEmail(emailInput)) {
       try {
-        const response = await axios.post('http://localhost:5000/check-email', { email: emailInput, type: 'signin' });
+        const response = await axios.post(`${API_URL}/check-email`, { email: emailInput, type: 'signin' });
         setIsEmailExist(response.data.exists);
         setEmailMessage(response.data.exists ? 'Email is valid.' : 'Email does not exist');
       } catch (error) {
@@ -82,7 +84,7 @@ function SignIn() {
   async function handleOtpSent() {
     
       try {
-        axios.post('http://localhost:5000/send-otp', { email, type: 'signin' });
+        axios.post(`${API_URL}/send-otp`, { email, type: 'signin' });
         setOtpMessage('OTP sent!');
         setIsOtpSent(true);
       } catch (error) {
@@ -95,7 +97,7 @@ function SignIn() {
 
   const handleOtpValidation = async () => {
     try {
-      const response = await axios.post('http://localhost:5000/verify-otp', { email, otp });
+      const response = await axios.post(`${API_URL}/verify-otp`, { email, otp });
       if (response.data.isValid) {
         setOtpValidationMessage("OTP verified Successfully!!");
         setIsOtpValid(true);

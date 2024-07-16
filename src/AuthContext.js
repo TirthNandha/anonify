@@ -1,6 +1,9 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import axios from 'axios';
 
+
+const API_URL = process.env.REACT_APP_API_URL;
+
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
@@ -17,7 +20,7 @@ export const AuthProvider = ({ children }) => {
 
   const validateToken = async (token) => {
     try {
-      const response = await axios.get('http://localhost:5000/api/validate-token', {
+      const response = await axios.get(`${API_URL}/api/validate-token`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setIsLoggedIn(true);
@@ -41,7 +44,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      await axios.post('http://localhost:5000/api/logout');
+      await axios.post(`${API_URL}/api/logout`);
     } finally {
       localStorage.removeItem('token');
       setIsLoggedIn(false);
