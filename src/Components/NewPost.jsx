@@ -19,7 +19,7 @@ const NewPost = ( ) => {
     // e.preventDefault();
     try {
       if(isLoggedIn){
-        await axios.post(`${API_URL}/newpost`, { title, content, category, username, college, department, passoutYear });
+        await axios.post(`${API_URL}/api/newpost`, { title, content, category, username, college, department, passoutYear });
         alert("New Post added successfully!!");
       } else{
         alert("Please signin to add post.");

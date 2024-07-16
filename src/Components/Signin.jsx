@@ -40,7 +40,7 @@ function SignIn() {
     event.preventDefault();
     try {
       // Send the signin request
-      const response = await axios.post(`${API_URL}/signin`, { email });
+      const response = await axios.post(`${API_URL}/api/signin`, { email });
       
       if (response.status === 200) {
         
@@ -62,7 +62,7 @@ function SignIn() {
 
     if (validateEmail(emailInput)) {
       try {
-        const response = await axios.post(`${API_URL}/check-email`, { email: emailInput, type: 'signin' });
+        const response = await axios.post(`${API_URL}/api/check-email`, { email: emailInput, type: 'signin' });
         setIsEmailExist(response.data.exists);
         setEmailMessage(response.data.exists ? 'Email is valid.' : 'Email does not exist');
       } catch (error) {
@@ -84,7 +84,7 @@ function SignIn() {
   async function handleOtpSent() {
     
       try {
-        axios.post(`${API_URL}/send-otp`, { email, type: 'signin' });
+        axios.post(`${API_URL}/api/send-otp`, { email, type: 'signin' });
         setOtpMessage('OTP sent!');
         setIsOtpSent(true);
       } catch (error) {
@@ -97,7 +97,7 @@ function SignIn() {
 
   const handleOtpValidation = async () => {
     try {
-      const response = await axios.post(`${API_URL}/verify-otp`, { email, otp });
+      const response = await axios.post(`${API_URL}/api/verify-otp`, { email, otp });
       if (response.data.isValid) {
         setOtpValidationMessage("OTP verified Successfully!!");
         setIsOtpValid(true);

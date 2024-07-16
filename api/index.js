@@ -13,7 +13,7 @@ const { createServer } = require('http');
 const app = express();
 
 const corsOptions = {
-  origin: "http://localhost:3000",
+  origin: "https://localhost:3000",
   methods: ['GET', 'HEAD', 'POST', 'PUT', 'DELETE'],
   credentials: true
 }
@@ -37,7 +37,7 @@ db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 
 
-app.post('/check-username', async (req, res) => {
+app.post('/api/check-username', async (req, res) => {
   const { username } = req.body;
 
   try {
@@ -53,7 +53,7 @@ app.post('/check-username', async (req, res) => {
   }
 });
 
-app.post('/check-email', async (req, res) => {
+app.post('/api/check-email', async (req, res) => {
   const { email, type } = req.body;
 
   try {
@@ -79,7 +79,7 @@ app.post('/check-email', async (req, res) => {
   }
 });
 
-app.post('/send-otp', async function (req, res) {
+app.post('/api/send-otp', async function (req, res) {
   const { username, email, type } = req.body;
 
   const otp = sendOTP(email);
@@ -114,7 +114,7 @@ app.post('/send-otp', async function (req, res) {
     return res.status(500).json({ message: 'Internal server error' });
   }
 });
-app.post('/verify-otp', async function (req, res) {
+app.post('/api/verify-otp', async function (req, res) {
   const { email, otp } = req.body;
 
   try {
@@ -133,7 +133,7 @@ app.post('/verify-otp', async function (req, res) {
   }
 });
 
-app.post('/signup', async (req, res) => {
+app.post('/api/signup', async (req, res) => {
   try {
     const { username, college, department, passoutYear } = req.body;
 
@@ -233,7 +233,7 @@ app.get('/api/validate-token', async (req, res) => {
 
 
 
-app.post('/signin', async (req, res) => {
+app.post('/api/signin', async (req, res) => {
   try {
     const { email } = req.body
     await User.updateOne({ email }, { $unset: { otp: "" } });
@@ -265,7 +265,7 @@ app.post('/signin', async (req, res) => {
   }
 });
 
-app.post('/getDetails', async (req, res) => {
+app.post('/api/getDetails', async (req, res) => {
   const { email } = req.body;
   try {
     const user = await User.findOne({ email: email });
@@ -280,7 +280,7 @@ app.post('/getDetails', async (req, res) => {
   }
 });
 
-app.post('/newpost', async function (req, res) {
+app.post('/api/newpost', async function (req, res) {
   const { title, content, category, username, college, department, passoutYear } = req.body;
   const likes = 0;
   const comments = [];

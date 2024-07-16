@@ -13,7 +13,7 @@ export const DataProvider = ({ children }) => {
   useEffect(() => {
     async function getDetails(email) {
       try {
-        const response = await axios.post(`${API_URL}/getDetails`, { email });
+        const response = await axios.post(`${API_URL}/api/getDetails`, { email });
         const { department, passoutYear, college, username } = response.data;
         setData({ department, passoutYear, college, username });
       } catch (error) {
