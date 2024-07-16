@@ -3,10 +3,12 @@ import "../styles/Post.css";
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import CommentIcon from '@mui/icons-material/Comment';
 import axios from 'axios';
+import { useAuth } from '../AuthContext';
 
 const Post = ({ college, department, passoutYear, title, content, commentsCount, username, postId, initialLikes, currentUser }) => {
   const [isLiked, setIsLiked] = useState(false);
   const [likes, setLikes] = useState(initialLikes);
+  const { isLoggedIn } = useAuth();
 
   useEffect(() => {
     // Check if the user has already liked the post
@@ -25,10 +27,14 @@ const Post = ({ college, department, passoutYear, title, content, commentsCount,
 
   async function handleLike() {
     try {
-      const response = await axios.post(`http://localhost:5000/api/posts/${postId}/like`, { username: currentUser });
-      if (response.data.success) {
-        setIsLiked(response.data.isLiked);
-        setLikes(response.data.likeCount);
+      if (isLoggedIn) {
+        const response = await axios.post(`http://localhost:5000/api/posts/${postId}/like`, { username: currentUser });
+        if (response.data.success) {
+          setIsLiked(response.data.isLiked);
+          setLikes(response.data.likeCount);
+        }
+      } else {
+        alert("You need to be logged in to like a post");
       }
     } catch (error) {
       console.error('Error liking post:', error);
@@ -43,7 +49,7 @@ const Post = ({ college, department, passoutYear, title, content, commentsCount,
     <div className="postContainer">
       <div className="department">{department}</div>
       <div className='titleContainer'>
-          <h2 className="title" style={{ cursor: 'pointer' }} onClick={handlePost}>{title}</h2>
+        <h2 className="title" style={{ cursor: 'pointer' }} onClick={handlePost}>{title}</h2>
         <span className="postedBy">{`~ Posted by ${username}`}</span>
       </div>
       <div className="tagContainer">

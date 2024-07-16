@@ -5,6 +5,7 @@ import { useParams } from 'react-router-dom';
 import Post from './Post';
 import { Box, Typography, Divider, TextareaAutosize, Button } from '@mui/material';
 import Comment from './Comment';
+import { useAuth } from '../AuthContext';
 
 function DisplayPost() {
     const [post, setPost] = useState(null);
@@ -12,6 +13,7 @@ function DisplayPost() {
     const [newComment, setNewComment] = useState('');
     const { postId } = useParams();
     const { department, passoutYear, username, college } = useContext(DataContext);
+    const {isLoggedIn} = useAuth();
 
     useEffect(() => {
         const fetchPostAndComments = async () => {
@@ -31,23 +33,28 @@ function DisplayPost() {
     }, [postId]);
 
     const handleCommentSubmit = async (e) => {
-        if (!newComment.trim()) {
-            // e.preventDefault();
-            alert("Comment cannot be empty");
-            return;
-        }
-
+        
         try {
-            const response = await axios.post(`http://localhost:5000/api/post/${postId}/add-comment`, {
-                content: newComment,
-                username: username,
-                passoutYear: passoutYear,
-                department: department,
-                college: college
-            });
-            setComments([...comments, response.data]);
-            setNewComment('');
-            // alert("Comment added successfully");
+            if(isLoggedIn){
+
+                if (!newComment.trim()) {
+                    // e.preventDefault();
+                    alert("Comment cannot be empty");
+                    return;
+                }
+                const response = await axios.post(`http://localhost:5000/api/post/${postId}/add-comment`, {
+                    content: newComment,
+                    username: username,
+                    passoutYear: passoutYear,
+                    department: department,
+                    college: college
+                });
+                setComments([...comments, response.data]);
+                setNewComment('');
+                // alert("Comment added successfully");
+            } else {
+                alert("You need to be logged in to comment on a post");
+            }
         } catch (error) {
             console.error("Error adding comment:", error);
         }
