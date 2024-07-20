@@ -8,8 +8,8 @@ function sendOTP(email) {
     const transporter = nodemailer.createTransport({
         service: 'Gmail', // Or your email service provider
         host: 'smtp.gmail.com',
-        post:587,
-        secure:false,
+        port:465,
+        secure:true,
         auth: {
             user: process.env.SENDER_EMAIL, // Your email address
             pass: process.env.SENDER_APP_PASS, // Your email password
@@ -17,7 +17,7 @@ function sendOTP(email) {
     });
 
     const mailOptions = {
-        from: process.env.SENDER_EMAIL,
+        from: ` "Anonify verifier" ${process.env.SENDER_EMAIL}`,
         to: email,
         subject: 'OTP Verification for Anonify',
         text: `Your OTP is ${otp}`,
