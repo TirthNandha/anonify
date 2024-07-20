@@ -12,11 +12,23 @@ const { createServer } = require('http');
 
 const app = express();
 
+const allowedOrigins = [
+  'http://localhost:3000',
+  process.env.REACT_APP_API_URL
+];
+
 const corsOptions = {
-  origin: "https://anonify-five.vercel.app",
+  origin: function (origin, callback) {
+    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   methods: ['GET', 'HEAD', 'POST', 'PUT', 'DELETE'],
-  credentials: true
-}
+  credentials: true,
+  optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+};
 
 app.use(cors(corsOptions));
 app.use(bodyParser.json());

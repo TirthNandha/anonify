@@ -27,7 +27,7 @@ function RenderPost(props) {
     return (
         <div>
             {posts.length === 0 ? (
-                <p>No posts to display</p>
+                <p>Posts are loading...</p>
             ) : (
                 posts.map((post) => (
                     <Post
