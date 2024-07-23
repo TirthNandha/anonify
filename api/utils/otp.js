@@ -3,7 +3,7 @@ require('dotenv').config();
 const nodemailer = require('nodemailer');
 
 
-function sendOTP(email) {
+async function sendOTP(email) {
     const otp = Math.floor(1000 + Math.random() * 9000); // Generate a 4-digit OTP
     const transporter = nodemailer.createTransport({
         service: 'Gmail', // Or your email service provider
@@ -23,13 +23,16 @@ function sendOTP(email) {
         text: `Your OTP is ${otp}`,
     };
 
-    transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-            console.error(error);
-        } else {
-            console.log('Email sent: ' + info.response);
-        }
-    });
+    await new Promise((resolve, reject) => {
+        transporter.sendMail(mailOptions, (err, info) => {
+          if (err) {
+            console.error(err);
+            reject("email error: ", err);
+          } else {
+            resolve("email sent info: ", info);
+          }
+        });
+      });
     return otp;
 }
 

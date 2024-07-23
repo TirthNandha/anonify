@@ -94,7 +94,7 @@ app.post('/api/check-email', async (req, res) => {
 app.post('/api/send-otp', async function (req, res) {
   const { username, email, type } = req.body;
 
-  const otp = sendOTP(email);
+  const otp = await sendOTP(email);
 
   try {
     if (type === 'signup') {
