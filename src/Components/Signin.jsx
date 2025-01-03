@@ -135,7 +135,7 @@ function SignIn() {
               required
               fullWidth
               id="email"
-              label="Email Address"
+              label="College Email ID"
               name="email"
               autoComplete="email"
               autoFocus
